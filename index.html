@@ -14,6 +14,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+<!-- BOTÃO DISCRETO NO CANTINHO - SEMPRE VISÍVEL -->
+<button id="btnInstalarCantinho" onclick="instalarApp()" class="install-discreto">📲 instalar app</button>
+
 <div id="login" class="screen active">
 <div class="top"><img src="./logo_original.png"><b>BETHEC<br><span style="color:#ff2a2a">EMPILHADEIRAS</span></b></div>
 <h2 style="font-size:22px;font-weight:900;margin-bottom:14px">Acessar Sistema</h2>
@@ -24,8 +27,6 @@
 <button class="btn btn-white mt" onclick="show('cadastro')">Criar Conta</button>
 <div style="margin-top:20px;text-align:center;border-top:1px solid #2a2a2a;padding-top:12px">
 <a href="#" onclick="show('adminLogin');return false" style="font-size:11px;color:#888;text-decoration:underline">Acesso Administrador</a>
-<br><br>
-<a href="#" onclick="instalarApp();return false" id="linkInstalar" style="font-size:10px;color:#555;display:none;text-decoration:underline">📲 instalar app (discreto)</a>
 </div>
 </div>
 
@@ -66,10 +67,6 @@
 <div class="card-premium" onclick="show('adminPanel')" id="cardAdmin" style="display:none;background:#1a0000;border:1px solid #c81e1e"><div class="icon" style="background:#c81e1e">👑</div><div class="info"><b>PAINEL ADMIN TOTAL</b><span>Bruh_ghost@hotmail.com - Acesso total</span></div><div class="arrow">→</div></div>
 <button class="btn btn-white mt" onclick="fazerLogout()">Sair</button>
 <div id="userEmailLog" style="text-align:center;font-size:10px;color:#9a9a9a;margin-top:10px"></div>
-<div style="text-align:center;margin-top:12px;border-top:1px solid #2a2a2a;padding-top:8px">
-<a href="#" onclick="instalarApp();return false" id="linkInstalar2" style="font-size:10px;color:#555;display:none;text-decoration:underline">📲 instalar app (discreto)</a>
-<div style="font-size:8px;color:#444;margin-top:2px">App funciona offline após instalar</div>
-</div>
 </div>
 
 <div id="adminPanel" class="screen">
@@ -120,7 +117,7 @@
 
 <div id="dashboardUser" class="screen"><div class="top"><b>Histórico OS</b></div><div class="input"><label>Buscar</label><input id="buscaOS" placeholder="Empresa, OS..." oninput="filtrarOS()"></div><div id="listaOS"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
 
-<div id="backupScreen" class="screen"><div class="top"><b>Backup / Downloads</b></div><button class="btn btn-red" onclick="downloadBackupJSON()">⬇️ Backup JSON</button><button class="btn btn-white mt" onclick="downloadTodasOS()">⬇️ Todas OS CSV</button><div style="margin-top:12px;text-align:center"><a href="#" onclick="instalarApp();return false" id="linkInstalar3" style="font-size:10px;color:#555;display:none">📲 instalar app (discreto)</a></div><div id="listaBackups" style="margin-top:12px"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
+<div id="backupScreen" class="screen"><div class="top"><b>Backup / Downloads</b></div><button class="btn btn-red" onclick="downloadBackupJSON()">⬇️ Backup JSON</button><button class="btn btn-white mt" onclick="downloadTodasOS()">⬇️ Todas OS CSV</button><div id="listaBackups" style="margin-top:12px"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
 
 <div id="pop" class="popup"><div class="box"><b id="popT"></b><p id="popM" style="margin:8px 0;font-size:13px;white-space:pre-line"></p><button class="btn btn-red" onclick="closePop()">OK</button></div></div>
 
