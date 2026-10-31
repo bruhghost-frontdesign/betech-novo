@@ -342,30 +342,46 @@ function pop(t,m){
 }
 function closePop(){document.getElementById('pop').classList.remove('show');}
 
+// BOTÃO DISCRETO - SEMPRE VISÍVEL + MELHORA QUANDO CHROME LIBERA
 window.addEventListener('beforeinstallprompt',(e)=>{
   e.preventDefault();
   deferredPrompt=e;
-  let l1=document.getElementById('linkInstalar');
-  let l2=document.getElementById('linkInstalar2');
-  let l3=document.getElementById('linkInstalar3');
-  if(l1)l1.style.display='inline';
-  if(l2)l2.style.display='inline';
-  if(l3)l3.style.display='inline';
+  let btn=document.getElementById('btnInstalarCantinho');
+  if(btn){
+    btn.style.opacity='1';
+    btn.style.color='#22c55e';
+    btn.style.fontWeight='bold';
+    btn.innerHTML='📲 instalar app (clique aqui)';
+  }
 });
 
 function instalarApp(){
+  let btn=document.getElementById('btnInstalarCantinho');
   let isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
   let isInStandalone=window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches;
-  if(isInStandalone){pop('✅ Já instalado','App já está instalado');return}
-  if(isIOS){pop('📲 iPhone','Compartilhar ⬆️ > Adicionar à Tela de Início');return}
+  if(isInStandalone){
+    pop('✅ Já instalado','O app BETHEC já está instalado como aplicativo nativo na sua tela inicial!');
+    if(btn)btn.style.display='none';
+    return
+  }
+  if(isIOS){
+    pop('📲 Instalar no iPhone','1 - Toque no botão Compartilhar ⬆️ (quadrado com seta na barra inferior)\n2 - Role para baixo e toque em "Adicionar à Tela de Início"\n3 - Toque em "Adicionar" no canto superior direito\n\nPronto! Ícone BETHEC na tela inicial.');
+    return
+  }
   if(deferredPrompt){
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(choice=>{
-      if(choice.outcome==='accepted'){pop('✅ Instalando','App na tela inicial!')}
+      if(choice.outcome==='accepted'){
+        pop('✅ Instalando...','App BETHEC sendo instalado! Procure o ícone BETHEC na sua tela inicial. Ele funciona offline.');
+        if(btn)btn.style.display='none';
+      }else{
+        pop('Instalação cancelada','Você pode instalar depois clicando no botão discreto no cantinho.');
+      }
       deferredPrompt=null;
     });
   }else{
-    pop('📲 Instalar App','Chrome: 3 pontinhos > Instalar app\nLink: https://bruhghost-frontdesign.github.io/betech-novo/');
+    // Mesmo sem prompt, mostra como instalar manualmente
+    pop('📲 Como instalar o App BETHEC','Para instalar:\n\nANDROID CHROME:\n1 - Clique nos 3 pontinhos ⋮ no canto superior direito\n2 - Clique em "Instalar app" ou "Adicionar à tela inicial"\n3 - Clique em Instalar\n\nSe não aparecer "Instalar app", clique em "Adicionar à tela inicial".\n\nO app vai para sua tela inicial com sua logo original e funciona OFFLINE como app nativo!\n\nLink: https://bruhghost-frontdesign.github.io/betech-novo/');
   }
 }
 
@@ -380,4 +396,9 @@ window.addEventListener('load',()=>{
     show('menu');
   }
   atualizarStats();
+  // Verifica se já está instalado
+  if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true){
+    let btn=document.getElementById('btnInstalarCantinho');
+    if(btn)btn.style.display='none';
+  }
 });
