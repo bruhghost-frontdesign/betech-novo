@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BETHEC - FIX FINAL</title>
+<title>BETHEC - FINAL 6 DIGITOS</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./logo_original.png">
 <link rel="apple-touch-icon" href="./logo_original.png">
 <meta name="theme-color" content="#070707">
 <link rel="stylesheet" href="./style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 <button id="btnInstalarCantinho" onclick="instalarApp()" class="install-discreto">📲 instalar app</button>
@@ -19,35 +18,141 @@
 <div class="top"><img src="./logo_original.png"><b>BETHEC<br><span style="color:#ff2a2a">EMPILHADEIRAS</span></b></div>
 <h2>Acessar Sistema</h2>
 <div class="input"><label>E-mail</label><input id="lEmail" type="email"></div>
-<div class="input"><label>Senha</label><input id="lSenha" type="password"></div>
+<div class="input"><label>Senha</label><div style="display:flex;align-items:center"><input id="lSenha" type="password" style="flex:1"><button onclick="toggleSenha('lSenha')" style="background:none;border:none;color:#888;margin-left:8px;font-size:18px">👁️</button></div></div>
 <div id="loginHint" style="color:#ff2a2a;font-size:11px;margin-bottom:10px"></div>
 <button class="btn btn-red" onclick="fazerLogin()">Entrar</button>
 <button class="btn btn-white mt" onclick="show('cadastro')">Criar Conta</button>
-<div style="margin-top:20px;text-align:center;border-top:1px solid #2a2a2a;padding-top:12px">
-<a href="#" onclick="show('adminLogin');return false" style="font-size:11px;color:#888;text-decoration:underline">Acesso Administrador</a>
+<div style="margin-top:20px;text-align:center"><a href="#" onclick="show('adminLogin');return false" style="font-size:11px;color:#888;text-decoration:underline">Acesso Administrador</a></div>
+</div>
+
+<div id="cadastro" class="screen">
+<div class="top"><img src="./logo_original.png" style="width:60px"><b>CADASTRO USUÁRIO</b></div>
+<div class="input"><label>Nome Completo *</label><input id="cNome"></div>
+<div class="input"><label>E-mail *</label><input id="cEmail" type="email"></div>
+<div class="input"><label>Senha * (1 maiúscula + 1 especial)</label><div style="display:flex;align-items:center"><input id="cSenha" type="password" style="flex:1"><button onclick="toggleSenha('cSenha')" style="background:none;border:none;color:#888;margin-left:8px;font-size:18px">👁️</button></div><small style="font-size:9px;color:#666">Mínimo 6 caracteres, 1 maiúscula e 1 especial (!@#$%)</small></div>
+<div id="cadHint" style="color:#ff2a2a;font-size:11px;margin-bottom:10px"></div>
+<button class="btn btn-red" onclick="fazerCadastro()">Criar Conta</button>
+<button class="btn btn-white mt" onclick="show('login')">Voltar</button>
+</div>
+
+<div id="adminLogin" class="screen">
+<div class="top"><img src="./logo_original.png" style="width:60px"><b>ADMIN</b></div>
+<div style="background:#1a0000;border:1px solid #c81e1e;border-radius:12px;padding:12px;margin-bottom:14px"><b style="color:#ff2a2a;font-size:11px">👑 Bruh_ghost@hotmail.com</b></div>
+<div class="input"><label>E-mail Admin</label><input id="aEmail" value="Bruh_ghost@hotmail.com"></div>
+<div class="input"><label>Senha Admin</label><div style="display:flex;align-items:center"><input id="aSenha" type="password" value="Sofia919521*" style="flex:1"><button onclick="toggleSenha('aSenha')" style="background:none;border:none;color:#888;margin-left:8px">👁️</button></div></div>
+<button class="btn btn-red" onclick="loginAdmin()">Entrar Admin</button>
+<button class="btn btn-white mt" onclick="show('login')">Voltar</button>
+</div>
+
+<div id="menu" class="screen">
+<div class="menu-header"><img src="./logo_original.png" class="logo-big"><h2>BETHEC <span>EMPILHADEIRAS</span></h2><p id="userRoleInfo">Sorocaba SP</p><p id="mesInfo" style="font-size:10px;color:#22c55e;margin-top:4px"></p></div>
+<div style="display:flex;gap:8px;margin-bottom:12px">
+<div class="stat" style="flex:1"><b id="statOS">0</b><span>OS</span></div>
+<div class="stat" style="flex:1"><b id="statEmp">0</b><span>Empresas</span></div>
+<div class="stat" style="flex:1"><b id="statEquip">0</b><span>Equip</span></div>
+</div>
+<div class="card-premium btn-os-premium" onclick="show('os')"><div class="icon">📋</div><div class="info"><b>NOVA ORDEM DE SERVIÇO</b><span id="osNumMenu">OS ------</span></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('cadEmpresa')"><div class="icon blue">🏢</div><div class="info"><b>Pasta Empresas</b><span>CNPJ + Endereço completo</span></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('cadEquip')"><div class="icon black">🚜</div><div class="info"><b>Pasta Equipamentos</b><span>Marca, Série, Horímetro</span></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('dashboardUser')"><div class="icon green">📊</div><div class="info"><b>Histórico OS</b></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('adminPanel')" id="cardAdmin" style="display:none;background:#1a0000;border:1px solid #c81e1e"><div class="icon" style="background:#c81e1e">👑</div><div class="info"><b>PAINEL ADMIN</b><span>Histórico + Edição total</span></div><div class="arrow">→</div></div>
+<button class="btn btn-white mt" onclick="fazerLogout()">Sair</button>
+<div id="userEmailLog" style="text-align:center;font-size:10px;color:#9a9a9a;margin-top:10px"></div>
+</div>
+
+<div id="adminPanel" class="screen">
+<div class="top"><b>👑 PAINEL ADMIN</b></div>
+<div style="background:#c81e1e;color:#fff;padding:8px;border-radius:8px;text-align:center;font-size:11px;margin-bottom:12px">MODO ADMIN - Edita tudo + histórico acessos</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px">
+<div class="stat"><b id="admUsers">0</b><span>Users</span></div>
+<div class="stat"><b id="admEmp">0</b><span>Empresas</span></div>
+<div class="stat"><b id="admEquip">0</b><span>Equip</span></div>
+</div>
+<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+<button class="tab active" onclick="tabAdmin('historico')">📜 Histórico</button>
+<button class="tab" onclick="tabAdmin('users')">👥 Usuários</button>
+<button class="tab" onclick="tabAdmin('empresas')">🏢 Empresas</button>
+<button class="tab" onclick="tabAdmin('equip')">🚜 Equip</button>
+<button class="tab" onclick="tabAdmin('os')">📋 OS</button>
+</div>
+<div id="adminConteudo"></div>
+<button class="btn btn-white mt" onclick="show('menu')">Voltar Menu</button>
+</div>
+
+<div id="os" class="screen wide">
+<div id="pdfArea">
+<div class="folha">
+<div class="cabecalho-novo"><img src="./logo_original.png" class="logo"><div class="centro"><b>BETHEC EMPILHADEIRAS</b><span>Manutenção e Locação • Sorocaba - SP<br>bethecemp@outlook.com</span></div><div class="os-num"><b>ORDEM</b><span id="osNumSpan">------</span><div style="font-size:9px;color:#666;margin-top:4px" id="mesAnoOS">6 dígitos aleatórios</div></div></div>
+<div class="dados">
+<div>Empresa<select id="osEmpresaSelect" onchange="preencherEmpresaOS()"><option value="">Selecione da Pasta Empresas</option></select><input type="hidden" id="osEmpresa"><input type="text" id="osEmpresaDisplay" placeholder="Ou digite nome"></div>
+<div>E-mail Cliente<input id="osEmailCliente" type="email" placeholder="cliente@empresa.com"></div>
+<div>Equipamento<select id="osMarcaSelect" onchange="preencherEquipOS()"><option value="">Selecione da Pasta Equip</option></select><input type="hidden" id="osMarca"><input type="text" id="osMarcaDisplay" placeholder="Marca"></div>
+<div>Modelo<input id="osModeloAuto"></div>
+<div>Frota / Série<input id="osFrotaAuto"></div>
+<div>Horímetro<input id="osHoras" type="number"></div>
+<div>Número OS<input id="numOS" readonly style="background:#f0f0f0;font-weight:900;color:#c81e1e;font-size:18px;text-align:center"><small style="font-size:8px;color:#666">Aleatório 6 dígitos - muda a cada OS</small></div>
+<div>Data<input id="osData" type="date"></div>
+</div>
+<h3>Serviços Executados</h3><table><thead><tr><th>#</th><th>Descrição do Serviço</th></tr></thead><tbody id="servBody"></tbody></table>
+<h3>Peças Utilizadas</h3><table><thead><tr><th>#</th><th>Qtd</th><th>Peça</th></tr></thead><tbody id="pecaBody"></tbody></table>
+<div class="horarios-novo"><div><b>SAÍDA OFICINA</b><input type="time" id="h1"></div><div><b>CHEGADA CLIENTE</b><input type="time" id="h2"></div><div><b>SAÍDA CLIENTE</b><input type="time" id="h3"></div><div><b>CHEGADA OFICINA</b><input type="time" id="h4"></div></div>
+<h3>Fotos Antes (<span id="contadorAntes">0/5</span>) - Opcional</h3>
+<div class="fotos-grid" id="fotosAntes">
+<div class="foto-card"><b>ANTES 1</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,'antes',1)"></label></div><img id="antes1"></div>
+<div class="foto-card"><b>ANTES 2</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,'antes',2)"></label></div><img id="antes2"></div>
+<div class="foto-card"><b>ANTES 3</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,'antes',3)"></label></div><img id="antes3"></div>
+<div class="foto-card"><b>ANTES 4</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,'antes',4)"></label></div><img id="antes4"></div>
+<div class="foto-card"><b>ANTES 5</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,'antes',5)"></label></div><img id="antes5"></div>
+</div>
+<h3>Fotos Depois (<span id="contadorDepois">0/5</span>) - Opcional</h3>
+<div class="fotos-grid" id="fotosDepois">
+<div class="foto-card"><b>DEPOIS 1</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,'depois',1)"></label></div><img id="depois1"></div>
+<div class="foto-card"><b>DEPOIS 2</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,'depois',2)"></label></div><img id="depois2"></div>
+<div class="foto-card"><b>DEPOIS 3</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,'depois',3)"></label></div><img id="depois3"></div>
+<div class="foto-card"><b>DEPOIS 4</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,'depois',4)"></label></div><img id="depois4"></div>
+<div class="foto-card"><b>DEPOIS 5</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,'depois',5)"></label></div><img id="depois5"></div>
+</div>
+<div class="rodape"><div class="q"><b class="titulo">Observações</b><textarea id="obs" style="width:100%;height:80px;border:none;outline:none"></textarea></div><div class="q"><b class="titulo">Assinatura Cliente</b><canvas id="sigCanvas"></canvas><div style="display:flex;gap:4px;margin-top:4px"><button onclick="limparAss()" style="flex:1">Limpar</button><button onclick="salvarAss()" style="flex:1;background:#000;color:#fff;border-radius:4px">Salvar</button></div></div><div class="q"><b class="titulo">Técnico</b><input id="tecNome" placeholder="Nome do técnico"><input id="tecDoc" placeholder="Documento" style="margin-top:6px;width:100%;border:1px solid #000;padding:6px;border-radius:4px"></div></div>
+</div></div>
+<div id="botoes" style="display:flex;gap:6px;flex-wrap:wrap">
+<button class="btn btn-black" onclick="show('menu')" style="flex:1">← Menu</button>
+<button class="btn btn-red" onclick="gerarPDF()" style="flex:1">📄 PDF</button>
+<button class="btn btn-green" onclick="enviarPorEmail()" style="flex:1">📧 E-mail</button>
+<button class="btn btn-white" onclick="salvarOS()" style="flex:1">💾 Salvar OS</button>
 </div>
 </div>
 
-<div id="cadastro" class="screen"><div class="top"><img src="./logo_original.png" style="width:60px"><b>CADASTRO</b></div><div class="input"><label>Nome</label><input id="cNome"></div><div class="input"><label>E-mail</label><input id="cEmail"></div><div class="input"><label>Senha</label><input id="cSenha" type="password"></div><div id="cadHint" style="color:#ff2a2a;font-size:11px"></div><button class="btn btn-red" onclick="fazerCadastro()">Criar</button><button class="btn btn-white mt" onclick="show('login')">Voltar</button></div>
+<div id="cadEmpresa" class="screen">
+<div class="top"><b>📁 Pasta Empresas</b></div>
+<p style="font-size:11px;color:#888;margin-bottom:12px">Salvo na pasta Empresas dentro do app</p>
+<div class="input"><label>CNPJ *</label><input id="empCNPJ" placeholder="00.000.000/0000-00" oninput="mascaraCNPJ(this)"></div>
+<div class="input"><label>Nome / Razão Social *</label><input id="empNome"></div>
+<div class="input"><label>E-mail Cliente *</label><input id="empEmail" type="email"></div>
+<div class="input"><label>Rua / Endereço *</label><input id="empRua"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="input"><label>CEP</label><input id="empCEP"></div><div class="input"><label>Bairro</label><input id="empBairro"></div></div>
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:8px"><div class="input"><label>Cidade *</label><input id="empCidade"></div><div class="input"><label>Estado *</label><select id="empEstado"><option>SP</option><option>MG</option><option>PR</option><option>RJ</option><option>SC</option><option>RS</option><option>Outros</option></select></div></div>
+<div class="input"><label>Contato</label><input id="empContato"></div>
+<button class="btn btn-red" onclick="salvarEmpresa()">Salvar na Pasta Empresas</button>
+<button class="btn btn-white mt" onclick="show('menu')">Voltar</button>
+<div id="listaEmpresas" style="margin-top:16px"></div>
+</div>
 
-<div id="adminLogin" class="screen"><div class="top"><img src="./logo_original.png" style="width:60px"><b>ADMIN</b></div><div style="background:#1a0000;border:1px solid #c81e1e;border-radius:12px;padding:12px;margin-bottom:14px"><b style="color:#ff2a2a;font-size:11px">👑 Bruh_ghost@hotmail.com</b></div><div class="input"><label>E-mail</label><input id="aEmail" value="Bruh_ghost@hotmail.com"></div><div class="input"><label>Senha</label><input id="aSenha" type="password" value="Sofia919521*"></div><button class="btn btn-red" onclick="loginAdmin()">Entrar Admin</button><button class="btn btn-white mt" onclick="show('login')">Voltar</button></div>
+<div id="cadEquip" class="screen">
+<div class="top"><b>📁 Pasta Equipamentos</b></div>
+<p style="font-size:11px;color:#888;margin-bottom:12px">Salvo na pasta Equipamentos dentro do app</p>
+<div class="input"><label>Empresa (da pasta)</label><select id="equipEmpresaSelect"></select></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="input"><label>Marca *</label><input id="equipMarca"></div><div class="input"><label>Modelo *</label><input id="equipModelo"></div></div>
+<div class="input"><label>Nº Série *</label><input id="equipSerie"></div>
+<div class="input"><label>Horímetro Inicial</label><input id="equipHoras" type="number"></div>
+<div class="input"><label>Locação? *</label><select id="equipLocacao"><option value="nao">Não</option><option value="sim">Sim - Locado</option></select></div>
+<button class="btn btn-red" onclick="salvarEquip()">Salvar na Pasta Equipamentos</button>
+<button class="btn btn-white mt" onclick="show('menu')">Voltar</button>
+<div id="listaEquip" style="margin-top:16px"></div>
+</div>
 
-<div id="menu" class="screen"><div class="menu-header"><img src="./logo_original.png" class="logo-big"><h2>BETHEC <span>EMPILHADEIRAS</span></h2><p id="userRoleInfo">Sorocaba SP</p></div><div style="display:flex;gap:8px;margin-bottom:12px"><div class="stat" style="flex:1"><b id="statOS">0</b><span>OS</span></div><div class="stat" style="flex:1"><b id="statEmp">0</b><span>Empresas</span></div><div class="stat" style="flex:1"><b id="statEquip">0</b><span>Equip</span></div></div><div class="card-premium btn-os-premium" onclick="show('os')"><div class="icon">📋</div><div class="info"><b>NOVA OS</b><span id="osNumMenu">OS 4072</span></div><div class="arrow">→</div></div><div class="card-premium" onclick="show('cadEmpresa')"><div class="icon blue">🏢</div><div class="info"><b>Empresa</b></div><div class="arrow">→</div></div><div class="card-premium" onclick="show('cadEquip')"><div class="icon black">🚜</div><div class="info"><b>Equipamentos</b></div><div class="arrow">→</div></div><div class="card-premium" onclick="show('dashboardUser')"><div class="icon green">📊</div><div class="info"><b>Histórico OS</b></div><div class="arrow">→</div></div><div class="card-premium" onclick="show('backupScreen')"><div class="icon orange">☁️</div><div class="info"><b>Backup / Downloads</b></div><div class="arrow">→</div></div><div class="card-premium" onclick="show('adminPanel')" id="cardAdmin" style="display:none;background:#1a0000;border:1px solid #c81e1e"><div class="icon" style="background:#c81e1e">👑</div><div class="info"><b>PAINEL ADMIN</b><span>Acesso total</span></div><div class="arrow">→</div></div><button class="btn btn-white mt" onclick="fazerLogout()">Sair</button><div id="userEmailLog" style="text-align:center;font-size:10px;color:#9a9a9a;margin-top:10px"></div></div>
-
-<div id="adminPanel" class="screen"><div class="top"><b>👑 PAINEL ADMIN</b></div><div style="background:#c81e1e;color:#fff;padding:8px;border-radius:8px;text-align:center;font-size:11px;margin-bottom:12px">MODO ADMIN - Pode excluir tudo</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px"><div class="stat"><b id="admUsers">0</b><span>Users</span></div><div class="stat"><b id="admOS">0</b><span>OS</span></div><div class="stat"><b id="admEmp">0</b><span>Empresas</span></div><div class="stat"><b id="admEquip">0</b><span>Equip</span></div></div><div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="tab active" onclick="tabAdmin('users')">Usuários</button><button class="tab" onclick="tabAdmin('os')">OS</button><button class="tab" onclick="tabAdmin('empresas')">Empresas</button><button class="tab" onclick="tabAdmin('equip')">Equip</button></div><div id="adminConteudo"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
-
-<div id="os" class="screen wide"><div id="pdfArea"><div class="folha"><div class="cabecalho-novo"><img src="./logo_original.png" class="logo"><div class="centro"><b>BETHEC EMPILHADEIRAS</b><span>Manutenção e Locação • Sorocaba - SP<br>bethecemp@outlook.com</span></div><div class="os-num"><b>ORDEM</b><span id="osNumSpan">4072</span><div id="qrcode" style="margin-top:6px;display:flex;justify-content:center;background:#fff;padding:4px;min-height:60px"></div></div></div><div class="dados"><div>Empresa<select id="osEmpresaSelect" onchange="preencherEmpresaOS()"><option value="">Selecione</option></select><input type="hidden" id="osEmpresa"><input type="text" id="osEmpresaDisplay" placeholder="Ou digite" oninput="document.getElementById('osEmpresa').value=this.value;gerarQRCodeAuto()"></div><div>Cidade<input id="osCidadeAuto"></div><div>Equip<select id="osMarcaSelect" onchange="preencherEquipOS()"><option value="">Selecione</option></select><input type="hidden" id="osMarca"><input type="text" id="osMarcaDisplay" placeholder="Marca" oninput="document.getElementById('osMarca').value=this.value"></div><div>Modelo<input id="osModeloAuto"></div><div>Frota<input id="osFrotaAuto"></div><div>Horímetro<input id="osHoras" type="number"></div><div>OS<input id="numOS" value="4072" oninput="gerarQRCodeAuto()"></div><div>Data<input id="osData" type="date"></div></div><h3>Serviços</h3><table><thead><tr><th>#</th><th>Descrição</th></tr></thead><tbody id="servBody"></tbody></table><h3>Peças</h3><table><thead><tr><th>#</th><th>Qtd</th><th>Peça</th></tr></thead><tbody id="pecaBody"></tbody></table><div class="horarios-novo"><div><b>SAÍDA OFICINA</b><input type="time" id="h1"></div><div><b>CHEGADA CLIENTE</b><input type="time" id="h2"></div><div><b>SAÍDA CLIENTE</b><input type="time" id="h3"></div><div><b>CHEGADA OFICINA</b><input type="time" id="h4"></div></div><h3>Fotos (5)</h3><div class="fotos-grid"><div class="foto-card"><b>FOTO 1</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,1)"></label></div><img id="p1"></div><div class="foto-card"><b>FOTO 2</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,2)"></label></div><img id="p2"></div><div class="foto-card"><b>FOTO 3</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,3)"></label></div><img id="p3"></div><div class="foto-card"><b>FOTO 4</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,4)"></label></div><img id="p4"></div><div class="foto-card"><b>FOTO 5</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,5)"></label></div><img id="p5"></div></div><div class="rodape"><div class="q"><b class="titulo">Observações</b><textarea id="obs" style="width:100%;height:60px;border:none;outline:none"></textarea></div><div class="q"><b class="titulo">Assinatura Cliente</b><canvas id="sigCanvas"></canvas><div style="display:flex;gap:4px;margin-top:4px"><button onclick="limparAss()" style="flex:1">Limpar</button><button onclick="salvarAss()" style="flex:1;background:#000;color:#fff;border-radius:4px">Salvar</button></div><div id="qrcode2" style="margin-top:6px;display:flex;justify-content:center"></div></div><div class="q"><b class="titulo">Técnico</b><input id="tecNome" placeholder="Nome"><div id="qrcodePDF" style="margin-top:8px;display:flex;justify-content:center"></div></div></div></div></div><div id="botoes"><button class="btn btn-black" onclick="show('menu')">← Menu</button><button class="btn btn-red" onclick="gerarPDF2Pag()">📄 PDF</button><button class="btn btn-white" onclick="downloadOS()">⬇️ BAIXAR</button><button class="btn btn-green" onclick="salvarOSNoHistorico()">💾 Salvar</button></div></div>
-
-<div id="cadEmpresa" class="screen"><div class="top"><b>Empresa</b></div><div class="input"><label>Nome</label><input id="empNome"></div><div class="input"><label>Cidade</label><input id="empCidade"></div><div class="input"><label>Contato</label><input id="empContato"></div><button class="btn btn-red" onclick="salvarEmpresa()">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button><div id="listaEmpresas" style="margin-top:16px"></div></div>
-<div id="cadEquip" class="screen"><div class="top"><b>Equip</b></div><div class="input"><label>Empresa</label><select id="equipEmpresaSelect"></select></div><div class="input"><label>Marca</label><input id="equipMarca"></div><div class="input"><label>Modelo</label><input id="equipModelo"></div><div class="input"><label>Frota</label><input id="equipFrota"></div><button class="btn btn-red" onclick="salvarEquip()">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button><div id="listaEquip" style="margin-top:16px"></div></div>
-<div id="dashboardUser" class="screen"><div class="top"><b>Histórico OS</b></div><div class="input"><label>Buscar</label><input id="buscaOS" placeholder="Empresa, OS..." oninput="filtrarOS()"></div><div id="listaOS"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
-<div id="backupScreen" class="screen"><div class="top"><b>Backup</b></div><button class="btn btn-red" onclick="downloadBackupJSON()">⬇️ Backup JSON</button><button class="btn btn-white mt" onclick="downloadTodasOS()">⬇️ CSV OS</button><div id="listaBackups" style="margin-top:12px"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
-<div id="pop" class="popup"><div class="box"><b id="popT"></b><p id="popM" style="white-space:pre-line"></p><button class="btn btn-red" onclick="closePop()">OK</button></div></div>
+<div id="dashboardUser" class="screen"><div class="top"><b>Histórico OS</b></div><div class="input"><label>Buscar OS</label><input id="buscaOS" placeholder="Empresa, OS..." oninput="filtrarOS()"></div><div id="listaOS"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
+<div id="pop" class="popup"><div class="box"><b id="popT"></b><p id="popM" style="margin:8px 0;font-size:13px;white-space:pre-line"></p><button class="btn btn-red" onclick="closePop()">OK</button></div></div>
 <script src="./script.js"></script>
-<script>
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').then(r=>console.log('SW OK')).catch(e=>console.log('SW erro',e));
-}
-</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>console.log('SW OK')).catch(e=>console.log(e))}</script>
 </body>
 </html>
