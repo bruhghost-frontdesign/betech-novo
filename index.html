@@ -2,221 +2,135 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BETHEC - App Final Premium</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BETHEC Empilhadeiras - OS</title>
 <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#000000">
 <link rel="stylesheet" href="./style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
-<div id="splash" class="screen active splash">
-<img src="./logo_original.png">
-<h1><span>BETHEC</span> Empilhadeiras</h1>
-<div class="actions">
-<button class="btn btn-black" onclick="show('login')">Entrar</button>
-<button class="btn btn-white" onclick="show('cadastro')">Criar conta</button>
-<button class="btn btn-white small" onclick="show('loginAdmin')">🔐 Admin</button>
-</div>
-<button class="download" onclick="baixar()">⬇️ Download App</button>
-</div>
-
-<div id="login" class="screen">
-<div class="top"><img src="./logo_original.png"><b>Login</b></div>
-<div class="input"><label>Email</label><input id="lEmail" type="email"></div>
-<div class="input"><label>Senha</label><input id="lSenha" type="password"><button class="eye" onclick="toggle('lSenha',this)">👁️</button></div>
-<button class="btn btn-red" onclick="doLogin()">ENTRAR</button>
-<button class="btn btn-white mt" onclick="show('cadastro')">Criar conta</button>
+<!-- LOGIN -->
+<div id="login" class="screen active">
+<div class="top"><img src="./logo_original.png" onerror="this.src='./bethec_final_preto.png'"><b>BETHEC<br><span style="color:#ff2a2a">EMPILHADEIRAS</span></b></div>
+<h2 style="font-size:22px;font-weight:900;margin-bottom:14px">Acessar Sistema</h2>
+<div class="input"><label>E-mail</label><input id="lEmail" type="email" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="seu@email.com"></div>
+<div class="input"><label>Senha</label><input id="lSenha" type="password" autocomplete="new-password" placeholder="••••••••"><button class="eye" onclick="toggleEye('lSenha')">👁️</button></div>
+<div id="loginHint" class="hint"></div>
+<button class="btn btn-red" onclick="fazerLogin()">Entrar</button>
+<button class="btn btn-white mt" onclick="show('cadastro')">Criar Conta</button>
+<button class="btn small" onclick="show('adminLogin')">Admin</button>
+<div class="logged">BETHEC • Sorocaba - SP • bethecemp@outlook.com</div>
 </div>
 
+<!-- CADASTRO -->
 <div id="cadastro" class="screen">
-<h2 style="text-align:center;margin-bottom:10px">Cadastro Novo Usuário</h2>
-<div class="input"><label>Nome Completo</label><input id="cNome"></div>
-<div class="input"><label>Celular</label><input id="cCel" maxlength="15" oninput="mask(this)"></div>
-<div class="input"><label>E-mail</label><input id="cEmail" type="email"></div>
-<div class="input"><label>Senha</label><input id="cSenha" type="password" oninput="checkS(this.value)"><button class="eye" onclick="toggle('cSenha',this)">👁️</button></div>
-<div class="hint" id="hSenha">• Precisa: MAIÚSCULA e !@#$%^&*</div>
-<div class="input"><label>Confirmar Senha</label><input id="cSenha2" type="password"><button class="eye" onclick="toggle('cSenha2',this)">👁️</button></div>
-<button class="btn btn-red" onclick="doCad()">CADASTRAR</button>
+<div class="top"><img src="./logo_original.png" onerror="this.src='./bethec_final_preto.png'"><b>CADASTRO</b></div>
+<div class="input"><label>Nome Completo</label><input id="cNome" type="text" placeholder="Seu nome"></div>
+<div class="input"><label>E-mail</label><input id="cEmail" type="email" autocomplete="off" placeholder="seu@email.com"></div>
+<div class="input"><label>Senha</label><input id="cSenha" type="password" placeholder="Mín. 6 caracteres"></div>
+<div id="cadHint" class="hint"></div>
+<button class="btn btn-red" onclick="fazerCadastro()">Criar Conta</button>
+<button class="btn btn-white mt" onclick="show('login')">Voltar ao Login</button>
 </div>
 
-<div id="loginAdmin" class="screen"><div class="top"><b>🔐 Admin</b></div><div class="input"><label>Usuário</label><input id="aUser" value="admin"></div><div class="input"><label>Senha Admin</label><input id="aPass" type="password" value="Sofia919521*"><button class="eye" onclick="toggle('aPass',this)">👁️</button></div><button class="btn btn-red" onclick="doAdmin()">ENTRAR COMO ADMIN</button></div>
-
-<div id="adminPanel" class="screen wide">
-<div class="top"><img src="./logo_original.png"><b>PAINEL ADMIN - DASHBOARD COMPLETO</b></div>
-<div class="stats">
-<div class="stat"><b id="dashOS">0</b><span>OS Criadas</span></div>
-<div class="stat"><b id="dashEmp">0</b><span>Empresas</span></div>
-<div class="stat"><b id="dashEquip">0</b><span>Equipamentos</span></div>
-<div class="stat"><b id="dashFaturamento">R$ 0</b><span>Em Orçamentos</span></div>
-</div>
-<div id="alertasManutencao"></div>
-<div class="tabs">
-<button class="tab active" onclick="adminTab('dashboard')">📊 Dashboard</button>
-<button class="tab" onclick="adminTab('usuarios')">👥 Usuários (<span id="countU">0</span>)</button>
-<button class="tab" onclick="adminTab('empresas')">🏢 Empresas (<span id="countE">0</span>)</button>
-<button class="tab" onclick="adminTab('equipamentos')">🚜 Equipamentos (<span id="countEq">0</span>)</button>
-<button class="tab" onclick="adminTab('backups')">☁️ Nuvem (<span id="countB">0</span>)</button>
-</div>
-<div id="adminDashboard">
-<div class="item"><b>📈 Histórico de OS por Equipamento</b><div id="histGeral"></div></div>
-</div>
-<div id="adminUsuarios" style="display:none"></div>
-<div id="adminEmpresas" style="display:none"></div>
-<div id="adminEquipamentos" style="display:none"></div>
-<div id="adminBackups" style="display:none"></div>
-<div style="display:flex;gap:8px;margin-top:16px"><button class="btn btn-red" onclick="gerarBackupCompleto()">☁️ BACKUP NUVEM</button><button class="btn btn-white" onclick="exportarTudo()">📤 EXPORTAR</button></div>
-<button class="btn btn-white mt" onclick="show('splash')">🚪 Sair</button>
-</div>
-
+<!-- MENU -->
 <div id="menu" class="screen">
 <div class="menu-header">
-<img src="./logo_original.png" class="logo-big">
-<h2><span>BETHEC</span> Empilhadeiras</h2>
-<p>Painel de Gestão • Sorocaba • v3.0 Final</p>
+<img src="./logo_original.png" onerror="this.src='./bethec_final_preto.png'" class="logo-big" style="width:100%;max-width:280px">
+<h2>BETHEC <span>EMPILHADEIRAS</span></h2>
+<p>Sistema Completo de Gestão • Sorocaba - SP</p>
 </div>
-<div class="card-premium" onclick="show('dashboardUser')">
-<div class="icon gold">📊</div><div class="info"><b>Dashboard</b><span>Visão geral da frota e alertas</span></div><div class="arrow">›</div>
+<div style="display:flex;gap:8px;margin-bottom:12px">
+<div class="stat" style="flex:1"><b id="statOS">0</b><span>OS Criadas</span></div>
+<div class="stat" style="flex:1"><b id="statEmp">0</b><span>Empresas</span></div>
+<div class="stat" style="flex:1"><b id="statEquip">0</b><span>Equip.</span></div>
 </div>
-<div class="card-premium" onclick="show('cadEmpresa')">
-<div class="icon">🏢</div><div class="info"><b>Cadastro de Empresas</b><span>Registrar nova empresa</span></div><div class="arrow">›</div>
-</div>
-<div class="card-premium" onclick="abrirEmpresasCadastradas()">
-<div class="icon blue">📋</div><div class="info"><b>Empresas Cadastradas</b><span>Gerenciar • <span id="qtdEmp">0</span></span></div><div class="arrow">›</div>
-</div>
-<div class="card-premium" onclick="show('cadEquip')">
-<div class="icon black">⚙️</div><div class="info"><b>Cadastro de Equipamentos</b><span>Adicionar equipamento</span></div><div class="arrow">›</div>
-</div>
-<div class="card-premium" onclick="abrirEquipamentosCadastrados()">
-<div class="icon green">🚜</div><div class="info"><b>Equipamentos Cadastrados</b><span>Frota ativa • <span id="qtdEquip">0</span> • Histórico</span></div><div class="arrow">›</div>
-</div>
-<div class="card-premium" onclick="show('backupScreen')">
-<div class="icon orange">☁️</div><div class="info"><b>Backup em Nuvem</b><span>No seu e-mail • <span id="qtdBackup">0</span></span></div><div class="arrow">›</div>
-</div>
-<div class="card-premium btn-os-premium" onclick="show('os')">
-<div class="icon">📝</div><div class="info"><b>Abrir Ordem de Serviço</b><span>Com QR Code + WhatsApp + Orçamento</span></div><div class="arrow">›</div>
-</div>
-<div class="logged">Logado: <span id="userLog"></span> • <span id="emailLog"></span></div>
-<button class="btn btn-white mt" onclick="sairApp()" style="margin-top:16px;border-color:var(--red);color:var(--red)">🚪 Sair do Aplicativo</button>
+<div class="card-premium btn-os-premium" onclick="show('os')"><div class="icon">📋</div><div class="info"><b>NOVA ORDEM DE SERVIÇO</b><span>Gerar OS com QR Code automático</span></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('cadEmpresa')"><div class="icon blue">🏢</div><div class="info"><b>Cadastro Empresa</b><span>Clientes e filiais</span></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('cadEquip')"><div class="icon black">🚜</div><div class="info"><b>Equipamentos</b><span>Frota e horímetro</span></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('dashboardUser')"><div class="icon green">📊</div><div class="info"><b>Histórico OS</b><span>Ver e restaurar</span></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('backupScreen')"><div class="icon orange">☁️</div><div class="info"><b>Backup Nuvem</b><span>Salvar / Restaurar</span></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('adminLogin')" id="cardAdmin" style="display:none"><div class="icon purple">👑</div><div class="info"><b>Painel Admin</b><span>Gerenciar usuários</span></div><div class="arrow">→</div></div>
+<button class="btn btn-white mt" onclick="fazerLogout()">Sair do Aplicativo</button>
+<div class="logged" id="userEmailLog"></div>
 </div>
 
-<div id="dashboardUser" class="screen">
-<div class="top"><b>📊 Dashboard - Sua Frota</b></div>
-<div class="stats">
-<div class="stat"><b id="uDashOS">0</b><span>OS</span></div>
-<div class="stat"><b id="uDashEmp">0</b><span>Empresas</span></div>
-<div class="stat"><b id="uDashEquip">0</b><span>Equip.</span></div>
-<div class="stat"><b id="uDashHoras">0h</b><span>Horímetro Total</span></div>
-</div>
-<div id="uAlertas"></div>
-<div class="item"><b>🚜 Equipamentos com mais OS</b><div id="uHist"></div></div>
-<button class="btn btn-white mt" onclick="show('menu')">Voltar</button>
-</div>
-
-<div id="cadEmpresa" class="screen">
-<div class="top"><b>🏢 Cadastro de Empresas</b></div>
-<div class="input"><label>Nome ou Razão Social *</label><input id="empNome"></div>
-<div class="input"><label>CNPJ</label><input id="empCNPJ"></div>
-<div class="input"><label>Telefone ou WhatsApp *</label><input id="empTel" maxlength="15" oninput="mask(this)"></div>
-<h3>Endereço</h3>
-<div class="input"><label>Rua</label><input id="empRua"></div>
-<div class="input-grid"><div class="input"><label>CEP</label><input id="empCep"></div><div class="input"><label>Número</label><input id="empNum"></div></div>
-<div class="input-grid"><div class="input"><label>Bairro</label><input id="empBairro"></div><div class="input"><label>Cidade *</label><input id="empCidade"></div></div>
-<div class="input"><label>Estado</label><select id="empEstado"><option value="">Selecione</option><option>SP</option><option>MG</option><option>RJ</option><option>PR</option><option>SC</option><option>RS</option><option>BA</option><option>GO</option><option>MT</option><option>MS</option><option>DF</option><option>ES</option><option>OUTRO</option></select></div>
-<button class="btn btn-red mt" onclick="salvarEmpresa()">💾 Salvar Empresa + Backup Nuvem</button>
-<button class="btn btn-white mt" onclick="show('menu')">Voltar</button>
-</div>
-
-<div id="listaEmpresas" class="screen"><div class="top"><b>📁 Empresas Cadastradas</b><span id="totalEmpLista"></span></div><div id="gridEmpresas" style="margin-top:10px"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
-
-<div id="cadEquip" class="screen">
-<div class="top"><b>🚜 Cadastro de Equipamentos</b></div>
-<div class="input"><label>Marca *</label><input id="eqMarca"></div>
-<div class="input"><label>Modelo *</label><input id="eqModelo"></div>
-<div class="input"><label>Frota *</label><input id="eqFrota"></div>
-<div class="input"><label>Tipo *</label><select id="eqTipo"><option value="">Selecione</option><option value="Própria">Própria</option><option value="Alugada">Alugada</option></select></div>
-<div class="input"><label>Empresa onde está *</label><select id="eqEmpresaLocal"><option value="">Selecione a empresa</option></select></div>
-<div class="input"><label>Horímetro Atual (para alertas)</label><input id="eqHoras" type="number" placeholder="Ex: 2450"></div>
-<button class="btn btn-red mt" onclick="salvarEquipamento()">💾 Salvar Equipamento</button>
-<button class="btn btn-white mt" onclick="show('menu')">Voltar</button>
-</div>
-
-<div id="listaEquipamentos" class="screen"><div class="top"><b>📁 Equipamentos Cadastrados - Toque para ver histórico</b><span id="totalEquipLista"></span></div><div id="gridEquipamentos" style="margin-top:10px"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
-
-<div id="historicoEquip" class="screen">
-<div class="top"><b id="histTitulo">📜 Histórico</b></div>
-<div id="histConteudo"></div>
-<button class="btn btn-white mt" onclick="show('listaEquipamentos')">Voltar</button>
-</div>
-
-<div id="backupScreen" class="screen">
-<div class="top"><img src="./logo_original.png"><b>☁️ Backup em Nuvem</b></div>
-<div class="item" style="background:linear-gradient(135deg,#1a0a0a,#2a1010);border-color:var(--red)"><b>☁️ Backup Automático no E-mail</b><span style="color:#ffaaaa">Enviando para: <b id="emailBackupInfo">seu e-mail</b></span><span style="color:#ccc;margin-top:6px">Cópia para admin bethecemp@outlook.com • Offline funciona, sincroniza depois</span></div>
-<div style="display:flex;gap:8px"><button class="btn btn-red" onclick="gerarBackupCompleto()">☁️ GERAR BACKUP NUVEM AGORA</button><button class="btn btn-white" onclick="exportarTudo()">📤 BAIXAR</button></div>
-<div id="listaBackups" style="margin-top:12px"></div>
-<button class="btn btn-white mt" onclick="show('menu')">Voltar</button>
-</div>
-
+<!-- OS - FOLHA -->
 <div id="os" class="screen wide">
 <div id="pdfArea">
-<div class="folha" id="folha">
+<div class="folha">
 <div class="cabecalho-novo">
-<img src="./logo_original.png" class="logo">
-<div class="centro"><b>BETHEC EMPILHADEIRAS</b><span>Peças e Assistência Técnica</span><br><span>Email: bethecemp@outlook.com | CNPJ: 65.940.241/0001-66</span><br><span>Tel: 15 99129-6558 - Sorocaba/SP</span></div>
-<div class="os-num"><b>ORDEM DE SERVIÇO</b><span id="osNumSpan">4072</span><div id="qrcode" style="margin-top:6px;display:flex;justify-content:center"></div></div>
-</div>
-<div class="dados">
-<div>Empresa:<select id="osEmpresaSelect" onchange="preencherEmpresaOS()"><option value="">Selecione empresa</option></select><input type="text" id="osEmpresa" placeholder="Ou digite manual" style="margin-top:4px"></div><div>Data:<input type="date" id="osData"></div>
-<div>Marca:<select id="osMarcaSelect" onchange="preencherEquipOS()"><option value="">Selecione equipamento</option></select><input type="text" id="osMarca" placeholder="Ou digite manual" style="margin-top:4px"></div><div>Horímetro:<input type="number" id="osHoras" oninput="verificarAlertaHoras()"></div>
-<div>Cidade:<input type="text" id="osCidadeAuto"></div><div>Modelo:<input type="text" id="osModeloAuto"></div>
-<div>Motor:<input type="text"></div><div>Chassis:<input type="text"></div>
-<div>Frota:<input type="text" id="osFrotaAuto"></div><div>Nº OS:<input type="text" id="numOS"></div>
-<div class="tipos"><strong>Tipo:</strong><label><input type="radio" name="tipo" value="Corretiva" checked> Corretiva</label><label><input type="radio" name="tipo" value="Preventiva"> Preventiva</label><label><input type="checkbox" id="checkOrcamento" onchange="toggleOrcamento()"> Orçamento</label></div>
-<div class="orcamento-box" id="boxOrcamento">
-<b style="font-size:12px">💰 ORÇAMENTO - Vira OS após aprovação</b>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-<div>Peças: R$<input type="number" id="orcPecas" placeholder="0.00" oninput="calcOrcamento()"></div>
-<div>Mão de obra: R$<input type="number" id="orcMao" placeholder="0.00" oninput="calcOrcamento()"></div>
-</div>
-<div style="margin-top:8px">Total: <b style="font-size:16px" id="orcTotal">R$ 0,00</b></div>
-<button type="button" class="no-print" style="margin-top:8px;background:#000;color:#fff;padding:8px;border-radius:6px;border:none;font-weight:700;width:100%" onclick="gerarLinkAprovacao()">📲 Gerar Link de Aprovação WhatsApp</button>
-<div id="linkAprovacao" style="margin-top:8px;font-size:10px;word-break:break-all;background:#fff;padding:6px;border:1px solid #000;display:none"></div>
-</div>
-</div>
-<h3>Peças aplicadas</h3>
-<table><tr><th style="width:15%">Qntd</th><th style="width:25%">Código</th><th>Descrição</th></tr>
-<tr><td><input></td><td><input></td><td><input></td></tr><tr><td><input></td><td><input></td><td><input></td></tr><tr><td><input></td><td><input></td><td><input></td></tr><tr><td><input></td><td><input></td><td><input></td></tr><tr><td><input></td><td><input></td><td><input></td></tr><tr><td><input></td><td><input></td><td><input></td></tr><tr><td><input></td><td><input></td><td><input></td></tr><tr><td><input></td><td><input></td><td><input></td></tr><tr><td><input></td><td><input></td><td><input></td></tr><tr><td><input></td><td><input></td><td><input></td></tr>
-</table>
-<h3>Descrição da mão de obra</h3>
-<table><tr><td><textarea rows="1"></textarea></td></tr><tr><td><textarea rows="1"></textarea></td></tr><tr><td><textarea rows="1"></textarea></td></tr><tr><td><textarea rows="1"></textarea></td></tr><tr><td><textarea rows="1"></textarea></td></tr><tr><td><textarea rows="1"></textarea></td></tr></table>
-<div class="horarios-novo">
-<div><b>SAÍDA DA OFICINA</b><input type="time" id="h1" value="08:00"></div>
-<div><b>CHEGADA NO CLIENTE</b><input type="time" id="h2" value="09:00"></div>
-<div><b>SAÍDA DO CLIENTE</b><input type="time" id="h3" value="11:30"></div>
-<div><b>CHEGADA NA OFICINA</b><input type="time" id="h4" value="12:30"></div>
-</div>
-<div class="rodape">
-<div class="q"><b class="titulo">ASSINATURA RESPONSÁVEL (CLIENTE)</b><canvas id="sigCanvas"></canvas><button type="button" class="no-print" onclick="limparAssinatura()" style="margin-top:6px;font-size:11px">Limpar</button></div>
-<div class="q"><b class="titulo">STATUS / TÉCNICO</b><label><input type="checkbox"> LIBERADO</label><br><label><input type="checkbox"> PARADO</label><br><br>Técnico:<input type="text" id="tecNome" style="font-weight:800;border:1px solid #000;padding:6px;border-radius:4px;margin-top:4px" readonly><br><br><div class="qr-box"><b style="font-size:9px">QR CODE VALIDAÇÃO</b><div id="qrcode2"></div><span style="font-size:8px">Escaneie para validar OS</span></div></div>
-<div class="q"><b class="titulo">VALOR TOTAL</b><span id="valorTotalOS" style="font-size:20px;font-weight:900">R$ 0,00</span><br><br><span style="font-size:10px">Horímetro próximo alerta: <b id="proxAlerta">250h</b></span><br><br><span id="alertaHorasTexto" style="font-size:10px;color:#c81e1e;font-weight:800"></span></div>
-</div>
-<div class="no-print fotos-grid">
-<div class="foto-card"><b>📸 FOTO 1</b><div class="foto-btns"><label>📷<input type="file" id="f1Cam" accept="image/*" capture="environment"></label><label class="galeria">📎<input type="file" id="f1Gal" accept="image/*"></label></div><img id="p1"></div>
-<div class="foto-card"><b>📸 FOTO 2</b><div class="foto-btns"><label>📷<input type="file" id="f2Cam" accept="image/*" capture="environment"></label><label class="galeria">📎<input type="file" id="f2Gal" accept="image/*"></label></div><img id="p2"></div>
-<div class="foto-card"><b>📸 FOTO 3</b><div class="foto-btns"><label>📷<input type="file" id="f3Cam" accept="image/*" capture="environment"></label><label class="galeria">📎<input type="file" id="f3Gal" accept="image/*"></label></div><img id="p3"></div>
-<div class="foto-card"><b>📸 FOTO 4</b><div class="foto-btns"><label>📷<input type="file" id="f4Cam" accept="image/*" capture="environment"></label><label class="galeria">📎<input type="file" id="f4Gal" accept="image/*"></label></div><img id="p4"></div>
-<div class="foto-card"><b>📸 FOTO 5</b><div class="foto-btns"><label>📷<input type="file" id="f5Cam" accept="image/*" capture="environment"></label><label class="galeria">📎<input type="file" id="f5Gal" accept="image/*"></label></div><img id="p5"></div>
-</div>
-</div>
-<div class="pagina-fotos" id="fotosPDF"><h2>ANEXO - FOTOS - OS <span id="osNumFoto">4072</span> - QR CODE VALIDAÇÃO</h2><div class="grid-fotos-pdf" id="gridPDF"></div><div style="text-align:center;padding:10px"><div id="qrcodePDF"></div><p style="font-size:10px;margin-top:6px">OS validada por QR Code - BETHEC Empilhadeiras</p></div></div>
-</div>
-<div class="no-print" id="botoes"><button class="btn btn-black" onclick="window.print()">🖨️ Imprimir</button><button class="btn btn-red" onclick="gerarPDF2Pag()">📄 PDF + QR + WhatsApp</button><button class="btn btn-green" onclick="enviarWhatsAppOS()">📲 Enviar WhatsApp</button><button class="btn btn-white" onclick="show('menu')">Voltar</button></div>
+<img src="./logo_original.png" onerror="this.src='./bethec_final_preto.png'" class="logo">
+<div class="centro"><b>BETHEC EMPILHADEIRAS</b><span>Manutenção e Locação • Sorocaba - SP<br>bethecemp@outlook.com • (15) 98122-0967</span><br><span style="font-size:7px;background:#000;color:#fff;padding:2px 6px;border-radius:10px">bethec-empilhadeiras.com</span></div>
+<div class="os-num"><b>ORDEM DE SERVIÇO</b><span id="osNumSpan">4072</span><div id="qrcode" style="margin-top:6px;display:flex;justify-content:center;background:#fff;padding:4px;border-radius:6px;min-height:80px;min-width:80px"></div><span style="font-size:6px">VALIDAÇÃO QR CODE</span></div>
 </div>
 
-<div id="popup" class="popup"><div class="box"><h3 id="pTitle"></h3><p id="pMsg"></p><button class="btn btn-red mt" onclick="closePop()">OK</button></div></div>
+<div class="dados">
+<div>Empresa<input type="hidden" id="osEmpresa"><select id="osEmpresaSelect" onchange="preencherEmpresaOS()"><option value="">Selecione a Empresa</option></select><input type="text" id="osEmpresaDisplay" placeholder="Ou digite" oninput="document.getElementById('osEmpresa').value=this.value; gerarQRCodeAuto()"></div>
+<div>Cidade<input id="osCidadeAuto" placeholder="Auto"></div>
+<div>Equipamento<select id="osMarcaSelect" onchange="preencherEquipOS()"><option value="">Selecione Equip.</option></select><input type="hidden" id="osMarca"><input type="text" id="osMarcaDisplay" placeholder="Marca" oninput="document.getElementById('osMarca').value=this.value"></div>
+<div>Modelo<input id="osModeloAuto" placeholder="Auto"></div>
+<div>Frota<input id="osFrotaAuto" placeholder="Auto"></div>
+<div>Horímetro<input id="osHoras" type="number" placeholder="Horas" oninput="verificarAlertaHoras()"></div>
+<div>Número OS<input id="numOS" value="4072" oninput="gerarQRCodeAuto()"></div>
+<div>Data<input id="osData" type="date"></div>
+<div class="tipos"><b>Tipo:</b> <label><input type="checkbox"> Preventiva</label><label><input type="checkbox"> Corretiva</label><label><input type="checkbox"> Entrega Técnica</label><label><input type="checkbox" id="checkOrcamento" onchange="toggleOrcamento()"> Orçamento</label></div>
+<div class="orcamento-box" id="orcamentoBox"><b>ORÇAMENTO - Itens</b><table><thead><tr><th>Qtd</th><th>Descrição</th><th>Valor Unit</th><th>Total</th></tr></thead><tbody id="orcBody"><tr><td><input type="number" value="1"></td><td><textarea placeholder="Peça/Serviço"></textarea></td><td><input type="number" placeholder="0,00"></td><td><input type="number" placeholder="0,00" readonly></td></tr></tbody></table><button onclick="addLinhaOrc()" style="font-size:10px;padding:4px 8px">+ Item</button></div>
+</div>
+
+<h3>Serviços Executados / Diagnóstico</h3>
+<table><thead><tr><th style="width:5%">#</th><th>Descrição do Serviço</th></tr></thead><tbody id="servBody"></tbody></table>
+
+<h3>Peças Utilizadas</h3>
+<table><thead><tr><th style="width:5%">#</th><th style="width:8%">Qtd</th><th>Peça / Código</th></tr></thead><tbody id="pecaBody"></tbody></table>
+
+<div class="horarios-novo">
+<div><b>SAÍDA DA OFICINA</b><input type="time" id="h1" value=""></div>
+<div><b>CHEGADA NO CLIENTE</b><input type="time" id="h2" value=""></div>
+<div><b>SAÍDA DO CLIENTE</b><input type="time" id="h3" value=""></div>
+<div><b>CHEGADA NA OFICINA</b><input type="time" id="h4" value=""></div>
+</div>
+
+<h3>Fotos do Serviço (5) - Clique na Câmera</h3>
+<div class="fotos-grid">
+<div class="foto-card"><b>FOTO 1 - Antes</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,1)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,1)"></label></div><img id="p1"></div>
+<div class="foto-card"><b>FOTO 2 - Durante</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,2)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,2)"></label></div><img id="p2"></div>
+<div class="foto-card"><b>FOTO 3 - Depois</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,3)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,3)"></label></div><img id="p3"></div>
+<div class="foto-card"><b>FOTO 4 - Detalhe</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,4)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,4)"></label></div><img id="p4"></div>
+<div class="foto-card"><b>FOTO 5 - Extra</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,5)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,5)"></label></div><img id="p5"></div>
+</div>
+
+<div class="rodape">
+<div class="q"><b class="titulo">Observações Técnicas</b><textarea id="obs" placeholder="Condições do equipamento, recomendações..." style="width:100%;height:60px;border:none;outline:none"></textarea></div>
+<div class="q"><b class="titulo">Assinatura Cliente - Validação</b><canvas id="sigCanvas"></canvas><div style="display:flex;gap:4px;margin-top:4px"><button onclick="limparAss()" style="flex:1;font-size:10px;padding:4px">Limpar</button><button onclick="salvarAss()" style="flex:1;font-size:10px;padding:4px;background:#000;color:#fff;border-radius:4px">Salvar Ass.</button></div><div id="qrcode2" style="margin-top:6px;display:flex;justify-content:center"></div></div>
+<div class="q"><b class="titulo">Técnico Responsável</b>Nome:<input id="tecNome" placeholder="Nome técnico" style="width:100%;margin-top:4px;padding:4px;border:1px solid #000;border-radius:4px"><br><br><div style="border-top:1px solid #000;margin-top:10px;padding-top:6px;text-align:center">Assinatura Técnico<br><br>___</div><div id="qrcodePDF" style="margin-top:8px;display:flex;justify-content:center"></div></div>
+</div>
+</div>
+
+<div class="pagina-fotos" id="fotosPDF">
+<h2>FOTOS DO SERVIÇO - OS <span id="osNumFoto">4072</span> - BETHEC Empilhadeiras</h2>
+<div class="grid-fotos-pdf" id="gridPDF"></div>
+<div class="qr-box" style="margin:10px"><div id="qrcodePDFFinal"></div><br><b style="font-size:10px">Documento Validado por QR Code - BETHEC</b></div>
+</div>
+</div>
+
+<div id="botoes"><button class="btn btn-black" onclick="show('menu')">← Menu</button><button class="btn btn-red" onclick="gerarPDF2Pag()">📄 GERAR PDF 2 PÁG. COM QR</button><button class="btn btn-green" onclick="salvarOSNoHistorico();pop('Salvo','OS salva no histórico')">💾 Salvar</button></div>
+<button class="download" onclick="gerarPDF2Pag()">⬇️ PDF</button>
+</div>
+
+<!-- OUTRAS TELAS (Empresa, Equip, Dash, Backup, Admin) -->
+<div id="cadEmpresa" class="screen"><div class="top"><img src="./logo_original.png" style="width:60px"><b>Cadastro Empresa</b></div><div class="input"><label>Nome Empresa</label><input id="empNome"></div><div class="input-grid"><div class="input"><label>Cidade</label><input id="empCidade"></div><div class="input"><label>Estado</label><select id="empEstado"><option>SP</option><option>MG</option><option>PR</option><option>Outros</option></select></div></div><div class="input"><label>Contato / Telefone</label><input id="empContato"></div><button class="btn btn-red" onclick="salvarEmpresa()">Salvar Empresa</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button><div id="listaEmpresas" style="margin-top:16px"></div></div>
+
+<div id="cadEquip" class="screen"><div class="top"><img src="./logo_original.png" style="width:60px"><b>Equipamentos</b></div><div class="input"><label>Empresa</label><select id="equipEmpresaSelect"></select></div><div class="input-grid"><div class="input"><label>Marca</label><input id="equipMarca"></div><div class="input"><label>Modelo</label><input id="equipModelo"></div></div><div class="input-grid"><div class="input"><label>Frota / Placa</label><input id="equipFrota"></div><div class="input"><label>Horas Atuais</label><input id="equipHoras" type="number"></div></div><button class="btn btn-red" onclick="salvarEquip()">Salvar Equipamento</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button><div id="listaEquip" style="margin-top:16px"></div></div>
+
+<div id="dashboardUser" class="screen"><div class="top"><b>Histórico OS</b></div><div id="listaOS"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
+<div id="backupScreen" class="screen"><div class="top"><b>Backup Nuvem</b></div><div class="stat"><b id="emailBackupInfo"></b><span>E-mail logado</span></div><button class="btn btn-red" onclick="gerarBackupCompleto(false)">Gerar Backup Agora</button><div id="listaBackups" style="margin-top:12px"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
+<div id="adminLogin" class="screen"><div class="top"><b>Admin</b></div><div class="input"><label>E-mail Admin</label><input id="aEmail"></div><div class="input"><label>Senha Admin</label><input id="aSenha" type="password"></div><button class="btn btn-red" onclick="loginAdmin()">Entrar Admin</button><button class="btn btn-white mt" onclick="show('login')">Voltar</button></div>
+<div id="adminPanel" class="screen wide"><div class="top"><b>Painel Admin</b></div><div class="stats"><div class="stat"><b id="admUsers">0</b><span>Usuários</span></div><div class="stat"><b id="admOS">0</b><span>OS Total</span></div><div class="stat"><b id="admEmp">0</b><span>Empresas</span></div><div class="stat"><b id="admEquip">0</b><span>Equip</span></div></div><div class="tabs"><div class="tab active" onclick="tabAdmin('users')">Usuários</div><div class="tab" onclick="tabAdmin('empresas')">Empresas</div><div class="tab" onclick="tabAdmin('equip')">Equipamentos</div></div><div id="adminConteudo"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar Menu</button></div>
+
+<div id="pop" class="popup"><div class="box"><b id="popT"></b><p id="popM" style="margin:8px 0;font-size:13px"></p><button class="btn btn-red" onclick="closePop()">OK</button></div></div>
 <script src="./script.js"></script>
 </body>
 </html>
