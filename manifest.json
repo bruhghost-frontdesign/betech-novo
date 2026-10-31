@@ -1,0 +1,10 @@
+{
+  "name": "BETHEC Empilhadeiras - OS 4072",
+  "short_name": "BETHEC",
+  "description": "Peças e assistência técnica",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [{ "src": "./logo_original.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }]
+}
