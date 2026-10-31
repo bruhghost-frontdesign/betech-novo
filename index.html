@@ -2,91 +2,167 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>BETHEC Empilhadeiras</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BETHEC - App Oficial</title>
 <link rel="stylesheet" href="./style.css">
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" href="./logo_original.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+.folha{font-size:13px;background:#fff}
+#sigCanvas{width:100%;height:140px;border:2px solid #000;background:#fff;touch-action:none;border-radius:4px}
+.foto-btns{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.foto-btns label{background:#007bff;color:#fff;padding:12px 16px;border-radius:6px;cursor:pointer;font-size:15px;font-weight:bold}
+.foto-btns label.galeria{background:#555}
+.foto-btns input{display:none}
+.fotos img{max-width:100%;margin-top:6px;border:1px solid #ddd;border-radius:6px;display:none}
+.topo{display:flex;gap:10px;align-items:center;padding:10px;border-bottom:3px solid #000}
+.topo img{width:110px}.info{font-size:9px;line-height:1.3}
+.box{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;border:1px solid #000;margin-top:8px}
+.box div{font-size:11px}.box input, .box textarea{width:100%;padding:6px;min-height:32px;border:1px solid #000;border-radius:4px}
+.tipos{grid-column:1 / -1;display:flex;gap:10px;align-items:center;padding:4px}
+.rodape{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;border-top:2px solid #000;padding-top:8px}
+.q{border:1px solid #000;padding:6px;border-radius:6px;font-size:11px}
+.q input{border:none;border-bottom:1px dotted #999;width:100%}
+.no-print{margin-top:10px}
+#botoes{display:flex;gap:8px}
+</style>
 </head>
 <body>
 
+<!-- SPLASH, LOGIN, CADASTRO, ADMIN IGUAIS -->
 <div id="splash" class="screen active splash">
-<img src="./logo_original.png">
-<h1><span style="color:var(--red)">BETHEC</span> Empilhadeiras</h1>
-<p>Peças e assistência técnica</p>
+<img src="./logo_original.png" style="width:220px">
+<h1><span style="color:#b91c1c">BETHEC</span> Empilhadeiras</h1>
 <div class="actions">
 <button class="btn btn-black" onclick="show('login')">Entrar</button>
-<button class="btn btn-white" onclick="show('cadastro')">Criar conta / Cadastrar Novo Usuário</button>
-<button class="btn btn-white small" onclick="show('loginAdmin')">🔐 Acesso Administrador</button>
+<button class="btn btn-white" onclick="show('cadastro')">Criar conta</button>
+<button class="btn btn-white small" onclick="show('loginAdmin')">🔐 Admin</button>
 </div>
 <button class="download" onclick="baixar()">⬇️ Download App</button>
 </div>
 
 <div id="login" class="screen">
 <div class="top"><img src="./logo_original.png"><b>Login</b></div>
-<div class="input"><span class="icon">📧</span><label>Email</label><input id="lEmail" type="email"></div>
-<div class="input"><span class="icon">🔒</span><label>Senha</label><input id="lSenha" type="password"><button class="eye" onclick="toggle('lSenha',this)">👁️</button></div>
+<div class="input"><label>Email</label><input id="lEmail" type="email"></div>
+<div class="input"><label>Senha</label><input id="lSenha" type="password"><button class="eye" onclick="toggle('lSenha',this)">👁️</button></div>
 <button class="btn btn-black" onclick="doLogin()">ENTRAR</button>
 <button class="btn btn-white mt" onclick="show('cadastro')">Criar conta</button>
-<button class="download" onclick="baixar()">⬇️ Download App</button>
 </div>
 
 <div id="cadastro" class="screen dark">
 <h2>Cadastro Novo Usuário</h2>
-<p class="sub">Senha precisa: MAIÚSCULA + !@#$%^&*</p>
-<div class="input dark"><span class="icon">👤</span><label>Nome Completo</label><input id="cNome"></div>
-<div class="input dark"><span class="icon">📞</span><label>Celular com DDD</label><input id="cCel" placeholder="(15) 99141-7227" maxlength="15" oninput="mask(this)"></div>
-<div class="input dark"><span class="icon">✉️</span><label>E-mail</label><input id="cEmail" type="email"></div>
-<div class="input dark"><span class="icon">🔒</span><label>Senha</label><input id="cSenha" type="password" oninput="checkS(this.value)"><button class="eye" onclick="toggle('cSenha',this)">👁️</button></div>
-<div class="hint" id="hSenha">• Precisa: 1 letra MAIÚSCULA e 1 caractere especial !@#$%^&*</div>
-<div class="input dark"><span class="icon">🔒</span><label>Confirmar Senha</label><input id="cSenha2" type="password"><button class="eye" onclick="toggle('cSenha2',this)">👁️</button></div>
+<p class="sub">Senha: MAIÚSCULA + !@#$%^&*</p>
+<div class="input dark"><label>Nome</label><input id="cNome"></div>
+<div class="input dark"><label>Celular</label><input id="cCel" placeholder="(15) 99141-7227" maxlength="15" oninput="mask(this)"></div>
+<div class="input dark"><label>E-mail</label><input id="cEmail" type="email"></div>
+<div class="input dark"><label>Senha</label><input id="cSenha" type="password" oninput="checkS(this.value)"><button class="eye" onclick="toggle('cSenha',this)">👁️</button></div>
+<div class="hint" id="hSenha">• Precisa: MAIÚSCULA e !@#$%^&*</div>
+<div class="input dark"><label>Confirmar Senha</label><input id="cSenha2" type="password"><button class="eye" onclick="toggle('cSenha2',this)">👁️</button></div>
 <button class="btn btn-red" onclick="doCad()">CADASTRAR</button>
-<button class="download" onclick="baixar()">⬇️ Download App</button>
 </div>
 
 <div id="loginAdmin" class="screen">
-<div class="top"><b>🔐 Login Administrador</b></div>
-<div class="input"><label>Usuário Admin</label><input id="aUser" value="admin"></div>
-<div class="input"><label>Senha Admin</label><input id="aPass" type="password" value="Sofia919521*"><button class="eye" onclick="toggle('aPass',this)">👁️</button></div>
+<div class="top"><b>🔐 Admin</b></div>
+<div class="input"><label>Usuário</label><input id="aUser" value="admin"></div>
+<div class="input"><label>Senha</label><input id="aPass" type="password" value="Sofia919521*"><button class="eye" onclick="toggle('aPass',this)">👁️</button></div>
 <button class="btn btn-black" onclick="doAdmin()">ENTRAR COMO ADMIN</button>
-<div class="info">Login: <b>admin</b> / Senha: <b>Sofia919521*</b></div>
+<div class="info">admin / Sofia919521*</div>
 </div>
 
 <div id="adminPanel" class="screen">
-<div class="top"><b>Backup - Usuários</b><span id="totalUsers"></span></div>
-<div class="row"><button class="btn btn-black" onclick="exportJSON()">Exportar JSON</button><button class="btn btn-red" onclick="exportCSV()">Exportar CSV</button></div>
+<div class="top"><b>Backup Usuários</b><span id="totalUsers"></span></div>
+<div class="row"><button class="btn btn-black" onclick="exportJSON()">JSON</button><button class="btn btn-red" onclick="exportCSV()">CSV</button></div>
 <div id="listaUsers"></div>
 <button class="btn btn-white mt" onclick="show('splash')">Sair</button>
 </div>
 
 <div id="menu" class="screen">
-<div class="top"><img src="./logo_original.png"><b>Menu Cadastro</b></div>
-<div class="card red" onclick="show('cadEmpresa')">🏢 <b>Cadastro de Empresas</b></div>
-<div class="card black" onclick="show('cadEquip')">🚜 <b>Cadastro de Equipamentos</b></div>
-<button class="btn btn-black mt" onclick="show('os')">OS 4072 - Ordem de Serviço</button>
+<div class="top"><img src="./logo_original.png"><b>Menu</b></div>
+<div class="card red" onclick="show('cadEmpresa')">🏢 Empresas</div>
+<div class="card black" onclick="show('cadEquip')">🚜 Equipamentos</div>
+<button class="btn btn-black mt" onclick="show('os')">OS 4072 - Abrir Ordem</button>
 <div class="logged">Logado: <span id="userLog"></span></div>
 </div>
 
-<div id="cadEmpresa" class="screen"><div class="top"><b>Cadastro Empresas</b></div><div class="input"><label>Razão Social</label><input></div><div class="input"><label>CNPJ</label><input></div><button class="btn btn-red" onclick="pop('Salvo!','Empresa cadastrada')">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
-<div id="cadEquip" class="screen"><div class="top"><b>Cadastro Equipamentos</b></div><div class="input"><label>Marca/Modelo</label><input></div><button class="btn btn-black" onclick="pop('Salvo!','Equipamento cadastrado')">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
+<div id="cadEmpresa" class="screen"><div class="top"><b>Empresas</b></div><div class="input"><label>Razão Social</label><input></div><div class="input"><label>CNPJ</label><input></div><button class="btn btn-red" onclick="pop('Salvo!','Empresa cadastrada')">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
+<div id="cadEquip" class="screen"><div class="top"><b>Equipamentos</b></div><div class="input"><label>Marca/Modelo</label><input></div><button class="btn btn-black" onclick="pop('Salvo!','Equipamento cadastrado')">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
 
+<!-- SUA OS PERFEITA INTEGRADA -->
 <div id="os" class="screen wide">
-<h3>OS Nº 4072 - Original PDF</h3>
-<div class="os-box">
-<div class="os-head"><div><img src="./logo_original.png" style="width:80px"><br><small>bethecemp@outlook.com - 15 99129-6558</small></div><div class="os-num"><b>OS Nº</b><br><span>4072</span></div></div>
-<div class="os-grid"><div><b>Empresa</b><input></div><div><b>Cidade</b><input></div><div><b>Horímetro</b><input></div></div>
-<div class="os-grid"><div><b>Marca</b><input></div><div><b>Modelo</b><input></div><div><b>Motor</b><input></div></div>
-<table><tr><th>Qtd</th><th>Código</th><th>Descrição</th></tr><tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr></table>
-<div class="os-foot">
-<div class="foot-col"><b>HORÁRIOS</b><div class="hor"><div><b>SAÍDA OFICINA</b><input type="time" value="08:30"></div><div><b>CHEGADA CLIENTE</b><input type="time" value="09:15"></div><div><b>SAÍDA CLIENTE</b><input type="time" value="11:40"></div><div><b>CHEGADA OFICINA</b><input type="time" value="12:20"></div></div></div>
-<div class="foot-col"><b>ASSINATURA RESPONSÁVEL</b><div class="sigBox"><canvas id="sig"></canvas></div><button class="mini" onclick="clearSig()">Limpar</button></div>
-<div class="foot-col"><b>STATUS</b><label class="status"><input type="radio" name="st"> LIBERADO</label><label class="status black"><input type="radio" name="st" checked> PARADO</label></div>
+<div class="folha" id="folha">
+<div class="topo">
+<img src="./logo_original.png" alt="BETHEC">
+<div class="info">BETHEC Peças e assistência técnica para empilhadeiras<br>EMAIL: bethecemp@outlook.com<br>CNPJ: 65.940.241/0001-66<br>Tel: 15 99129-6558 - Sorocaba/SP</div>
+</div>
+
+<div class="box">
+<div>Empresa:<br><input type="text"></div>
+<div>Data:<br><input type="date"></div>
+<div>Marca:<br><input type="text"></div>
+<div>Horímetro:<br><input type="number"></div>
+<div>Cidade:<br><input type="text"></div>
+<div>Modelo:<br><input type="text"></div>
+<div>Motor:<br><input type="text"></div>
+<div>Chassis:<br><input type="text"></div>
+<div>Frota:<br><input type="text"></div>
+<div>Nº OS:<br><input type="text" id="numOS"></div>
+<div class="tipos"><strong>Tipo:</strong><label><input type="radio" name="tipo"> Corretiva</label><label><input type="radio" name="tipo"> Preventiva</label><label><input type="checkbox"> Orçamento</label></div>
+</div>
+
+<h3>Peças aplicadas</h3>
+<table>
+<tr><th style="width:15%">Qntd</th><th style="width:25%">Código</th><th>Descrição</th></tr>
+<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+</table>
+
+<h3>Descrição da mão de obra</h3>
+<table>
+<tr><td><textarea rows="1"></textarea></td></tr>
+<tr><td><textarea rows="1"></textarea></td></tr>
+<tr><td><textarea rows="1"></textarea></td></tr>
+<tr><td><textarea rows="1"></textarea></td></tr>
+<tr><td><textarea rows="1"></textarea></td></tr>
+<tr><td><textarea rows="1"></textarea></td></tr>
+</table>
+
+<div class="no-print fotos">
+<div class="foto"><strong>📸 FOTO ANTES</strong>
+<div class="foto-btns">
+<label>📷 Câmera<input type="file" id="fAntesCam" accept="image/*" capture="environment"></label>
+<label class="galeria">📎 Galeria<input type="file" id="fAntesGal" accept="image/*"></label>
+</div><img id="pAntes"></div>
+<div class="foto"><strong>📸 FOTO DEPOIS</strong>
+<div class="foto-btns">
+<label>📷 Câmera<input type="file" id="fDepoisCam" accept="image/*" capture="environment"></label>
+<label class="galeria">📎 Galeria<input type="file" id="fDepoisGal" accept="image/*"></label>
+</div><img id="pDepois"></div>
+</div>
+
+<div class="rodape">
+<div class="q"><b>HORÁRIOS</b><br>Chegada: <input type="time"><br>Saída: <input type="time"><br>Desloc.: <input type="text"><br>Hrs: <input type="number"></div>
+<div class="q"><b>ASSINATURA RESPONSÁVEL</b><br>
+<canvas id="sigCanvas"></canvas><br>
+<button type="button" class="no-print" onclick="limparAssinatura()" style="margin-top:6px">Limpar assinatura</button>
+</div>
+<div class="q"><b>STATUS</b><br><label><input type="checkbox"> LIBERADO</label><br><label><input type="checkbox"> PARADO</label><br><br>Técnico:<input type="text" value="Bruno Santana"></div>
+</div>
+
+<div class="no-print" id="botoes">
+<button class="btn" onclick="window.print()">🖨️ Imprimir</button>
+<button class="btn black" onclick="gerarPDF()">📄 Gerar PDF (1 página)</button>
+<button class="btn btn-white" onclick="show('menu')">Voltar ao Menu</button>
 </div>
 </div>
-<button class="btn btn-black mt" onclick="window.print()">Imprimir / PDF</button>
-<button class="btn btn-white mt" onclick="show('menu')">Voltar</button>
 </div>
 
 <div id="popup" class="popup"><div class="box"><h3 id="pTitle"></h3><p id="pMsg"></p><button class="btn btn-black mt" onclick="closePop()">OK</button></div></div>
