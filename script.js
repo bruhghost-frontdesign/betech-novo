@@ -1,52 +1,383 @@
 let deferredPrompt=null;let canvasEl=null;let isAdminMode=false;
-function initCanvas(){canvasEl=document.getElementById('sigCanvas');if(!canvasEl)return;const ctx=canvasEl.getContext('2d');let drawing=false;function pos(e){const r=canvasEl.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top}}canvasEl.addEventListener('mousedown',e=>{drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)});canvasEl.addEventListener('mousemove',e=>{if(!drawing)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke()});window.addEventListener('mouseup',()=>drawing=false);canvasEl.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)},{passive:false});canvasEl.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke()},{passive:false});canvasEl.addEventListener('touchend',()=>drawing=false);ctx.lineWidth=2;ctx.lineCap='round';ctx.strokeStyle='#000'}
+const ADMIN_EMAIL = 'bruh_ghost@hotmail.com';
+const ADMIN_SENHA = 'Sofia919521*';
+
+function initCanvas(){
+  canvasEl=document.getElementById('sigCanvas');
+  if(!canvasEl)return;
+  const ctx=canvasEl.getContext('2d');
+  let drawing=false;
+  function pos(e){
+    const r=canvasEl.getBoundingClientRect();
+    const t=e.touches?e.touches[0]:e;
+    return{x:t.clientX-r.left,y:t.clientY-r.top}
+  }
+  canvasEl.addEventListener('mousedown',e=>{drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)});
+  canvasEl.addEventListener('mousemove',e=>{if(!drawing)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke()});
+  window.addEventListener('mouseup',()=>drawing=false);
+  canvasEl.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)},{passive:false});
+  canvasEl.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke()},{passive:false});
+  canvasEl.addEventListener('touchend',()=>drawing=false);
+  ctx.lineWidth=2;ctx.lineCap='round';ctx.strokeStyle='#000'
+}
 function limparAss(){if(canvasEl)canvasEl.getContext('2d').clearRect(0,0,canvasEl.width,canvasEl.height)}
-function salvarAss(){pop('Assinatura','Salva, não apaga mais no PDF')}
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='os'){setTimeout(()=>{initCanvas();['h1','h2','h3','h4'].forEach(h=>{let el=document.getElementById(h);if(el)el.value='';});gerarQRCodeAuto();carregarProximaOS();},300);carregarEmpresasNoSelect();carregarEquipNoSelect();if(!document.getElementById('osData').value)document.getElementById('osData').valueAsDate=new Date();preencherTabelasOS();}if(id==='cadEquip')carregarEmpresasParaEquip();if(id==='backupScreen'){listarBackups();let u=JSON.parse(localStorage.getItem('bethec_logged_user')||'null');if(u)document.getElementById('emailBackupInfo').textContent=u.email}if(id==='dashboardUser'){carregarFiltrosEmpresa();carregarDashboardUser()}if(id==='adminPanel'){carregarAdminTudo()}if(id==='menu'){atualizarStats();carregarProximaOS()}if(id==='cadEmpresa')listarEmpresas();if(id==='cadEquip')listarEquip();}
-function carregarProximaOS(){let ultimo=parseInt(localStorage.getItem('bethec_ultimo_os')||'4071');let proximo=ultimo+1;let els=['numOS','osNumSpan','osNumMenu','osNumAtual','osNumFoto','osNumRodape','osNumRodape2'];els.forEach(id=>{let el=document.getElementById(id);if(el){if(id==='numOS')el.value=proximo;else el.textContent=proximo;}});let dataEl=document.getElementById('dataRodape');if(dataEl)dataEl.textContent=new Date().toLocaleDateString('pt-BR');}
-function preencherTabelasOS(){let sBody=document.getElementById('servBody');if(sBody&&sBody.children.length===0){let html='';for(let i=1;i<=8;i++)html+=`<tr><td>${i}</td><td><textarea placeholder="Serviço ${i}"></textarea></td></tr>`;sBody.innerHTML=html;}let pBody=document.getElementById('pecaBody');if(pBody&&pBody.children.length===0){let html='';for(let i=1;i<=6;i++)html+=`<tr><td>${i}</td><td><input type="number" placeholder="Qtd"></td><td><input placeholder="Peça ${i}"></td></tr>`;pBody.innerHTML=html;}}
-function gerarQRCodeAuto(){let osNum=document.getElementById('numOS').value||'4072';let empresa=document.getElementById('osEmpresa').value||document.getElementById('osEmpresaDisplay').value||'BETHEC';let urlBase=window.location.origin+window.location.pathname.replace('index.html','')+'validar.html';let textoValidacao=`${urlBase}?os=${osNum}&emp=${encodeURIComponent(empresa)}&data=${new Date().toISOString().split('T')[0]}`;let el1=document.getElementById('qrcode');if(el1){el1.innerHTML='';try{new QRCode(el1,{text:textoValidacao,width:80,height:80});}catch(e){}}['qrcode2','qrcodePDF','qrcodePDFFinal'].forEach(id=>{let el=document.getElementById(id);if(el){el.innerHTML='';try{new QRCode(el,{text:textoValidacao,width:id==='qrcodePDFFinal'?120:90,height:id==='qrcodePDFFinal'?120:90});}catch(e){}}});}
-function preencherEmpresaOS(){let id=document.getElementById('osEmpresaSelect').value;if(!id)return;let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');let emp=lista.find(e=>e.id==id);if(emp){document.getElementById('osEmpresa').value=emp.nome;document.getElementById('osEmpresaDisplay').value=emp.nome;document.getElementById('osCidadeAuto').value=emp.cidade;setTimeout(gerarQRCodeAuto,200);}}
-function preencherEquipOS(){let id=document.getElementById('osMarcaSelect').value;if(!id)return;let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');let eq=lista.find(e=>e.id==id);if(eq){document.getElementById('osMarca').value=eq.marca;document.getElementById('osMarcaDisplay').value=eq.marca;document.getElementById('osModeloAuto').value=eq.modelo;document.getElementById('osFrotaAuto').value=eq.frota;document.getElementById('osHoras').value=eq.horas||'';verificarAlertaHoras();setTimeout(gerarQRCodeAuto,200);}}
-function verificarAlertaHoras(){let h=parseInt(document.getElementById('osHoras').value);let div=document.getElementById('alertaHoras');if(!div)return;if(!h){div.textContent='';return}if(h>=1000)div.textContent='🔴 REVISÃO GERAL 1000h';else if(h>=500)div.textContent='🟠 REVISÃO 500h - Óleo + filtros';else if(h>=250)div.textContent='🟡 REVISÃO 250h - Óleo';else if(h>=200)div.textContent='⚠️ Horímetro alto';else div.textContent='✅ OK';}
-function gerarPDF2Pag(){salvarOSNoHistorico(false);gerarQRCodeAuto();const osNum=document.getElementById('numOS').value||'4072';const grid=document.getElementById('gridPDF');grid.innerHTML='';for(let i=1;i<=5;i++){const img=document.getElementById('p'+i);if(img&&img.src&&img.style.display!=='none'){const div=document.createElement('div');div.innerHTML=`<div style="border:1px solid #000;padding:4px;border-radius:6px"><b style="font-size:10px">FOTO ${i}</b><br><img src="${img.src}" style="width:100%;max-height:220px;object-fit:contain"></div>`;grid.appendChild(div);}}let canvas=document.getElementById('sigCanvas');let assinaturaData=null;if(canvas){try{assinaturaData=canvas.toDataURL('image/png');}catch(e){}}if(assinaturaData&&assinaturaData.length>100){let divAss=document.createElement('div');divAss.innerHTML=`<div style="border:1px solid #000;padding:6px;border-radius:6px;text-align:center"><b style="font-size:10px">ASSINATURA - OS ${osNum}</b><br><img src="${assinaturaData}" style="width:100%;max-height:100px;object-fit:contain"></div>`;grid.appendChild(divAss);}const area=document.getElementById('pdfArea');const botoes=document.getElementById('botoes');botoes.style.display='none';let opt={margin:2,filename:'OS-BETHEC-'+osNum+'-TIMBRADO.pdf',image:{type:'jpeg',quality:0.92},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};html2pdf().set(opt).from(area).save().then(()=>{botoes.style.display='flex';pop('✅ PDF Timbrado','PDF com logo + QR validável\n2 páginas');});}
-function compressImage(file, maxWidth, callback){let reader=new FileReader();reader.onload=function(e){let img=new Image();img.onload=function(){let canvas=document.createElement('canvas');let width=img.width;let height=img.height;if(width>maxWidth){height=Math.round((height*maxWidth)/width);width=maxWidth;}canvas.width=width;canvas.height=height;let ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,width,height);let dataUrl=canvas.toDataURL('image/jpeg',0.7);let sizeKB=Math.round((dataUrl.length*3/4)/1024);callback(dataUrl,sizeKB);};img.src=e.target.result;};reader.readAsDataURL(file);}
-function previewFoto(input,num){if(input.files&&input.files[0]){compressImage(input.files[0],800,function(dataUrl,sizeKB){let img=document.getElementById('p'+num);img.src=dataUrl;img.style.display='block';let sizeEl=document.getElementById('size'+num);if(sizeEl)sizeEl.textContent='📦 '+sizeKB+'KB';});}}
-function salvarEmpresa(){let nome=document.getElementById('empNome').value.trim();if(!nome)return pop('Erro','Nome obrigatório');let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');lista.push({id:Date.now(),nome,cidade:document.getElementById('empCidade').value,estado:document.getElementById('empEstado').value,contato:document.getElementById('empContato').value});localStorage.setItem('bethec_empresas',JSON.stringify(lista));pop('Salvo','Empresa salva');listarEmpresas();document.getElementById('empNome').value='';}
-function listarEmpresas(){let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');let div=document.getElementById('listaEmpresas');if(!div)return;div.innerHTML=lista.map(e=>`<div class="item"><b>${e.nome}</b> - ${e.cidade}/${e.estado}<br><small>${e.contato}</small><br><button onclick="delEmpresa(${e.id})" style="font-size:10px;margin-top:4px;background:${isAdminMode?'#c81e1e':'#333'};color:#fff;border:none;padding:6px 10px;border-radius:6px">Excluir</button></div>`).join('')||'<p style="color:#999">Nenhuma empresa</p>';}
-function delEmpresa(id){if(!confirm('Excluir empresa?'))return;let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');lista=lista.filter(e=>e.id!=id);localStorage.setItem('bethec_empresas',JSON.stringify(lista));listarEmpresas();carregarAdminTudo();}
-function carregarEmpresasNoSelect(){let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');let sel=document.getElementById('osEmpresaSelect');if(sel)sel.innerHTML='<option value="">Selecione a Empresa</option>'+lista.map(e=>`<option value="${e.id}">${e.nome} - ${e.cidade}</option>`).join('');}
-function carregarFiltrosEmpresa(){let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');let sel=document.getElementById('filtroEmpresa');if(sel)sel.innerHTML='<option value="">Todas empresas</option>'+lista.map(e=>`<option value="${e.nome}">${e.nome}</option>`).join('');}
-function carregarEmpresasParaEquip(){let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');let sel=document.getElementById('equipEmpresaSelect');if(sel)sel.innerHTML=lista.map(e=>`<option value="${e.nome} - ${e.cidade}">${e.nome}</option>`).join('');}
-function salvarEquip(){let marca=document.getElementById('equipMarca').value.trim();if(!marca)return pop('Erro','Marca obrigatória');let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');lista.push({id:Date.now(),marca,modelo:document.getElementById('equipModelo').value,frota:document.getElementById('equipFrota').value,horas:document.getElementById('equipHoras').value,empresa:document.getElementById('equipEmpresaSelect').value});localStorage.setItem('bethec_equipamentos',JSON.stringify(lista));pop('Salvo','Equipamento salvo');listarEquip();}
-function listarEquip(){let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');let div=document.getElementById('listaEquip');if(!div)return;div.innerHTML=lista.map(e=>`<div class="item"><b>${e.marca} ${e.modelo}</b> - ${e.frota} - ${e.horas}h<br><small>${e.empresa}</small><br><button onclick="delEquip(${e.id})" style="font-size:10px;margin-top:4px;background:${isAdminMode?'#c81e1e':'#333'};color:#fff;border:none;padding:6px 10px;border-radius:6px">Excluir</button></div>`).join('')||'<p style="color:#999">Nenhum equipamento</p>';}
-function delEquip(id){if(!confirm('Excluir equipamento?'))return;let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');lista=lista.filter(e=>e.id!=id);localStorage.setItem('bethec_equipamentos',JSON.stringify(lista));listarEquip();carregarAdminTudo();}
-function carregarEquipNoSelect(){let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');let sel=document.getElementById('osMarcaSelect');if(sel)sel.innerHTML='<option value="">Selecione Equip.</option>'+lista.map(e=>`<option value="${e.id}">${e.marca} ${e.modelo} - ${e.frota}</option>`).join('');}
-function salvarOSNoHistorico(mostrarPop=true){let osNum=parseInt(document.getElementById('numOS').value||'4072');let os={id:Date.now(),num:osNum,empresa:document.getElementById('osEmpresa').value||document.getElementById('osEmpresaDisplay').value,data:document.getElementById('osData').value||new Date().toISOString().split('T')[0],horas:document.getElementById('osHoras').value,obs:document.getElementById('obs').value,tec:document.getElementById('tecNome').value,mes:(document.getElementById('osData').value||new Date().toISOString().split('T')[0]).substring(5,7)};let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');if(!lista.find(o=>o.num===osNum)){lista.unshift(os);localStorage.setItem('bethec_os',JSON.stringify(lista.slice(0,500)));localStorage.setItem('bethec_ultimo_os',osNum.toString());if(mostrarPop)pop('✅ OS Salva','OS '+osNum+' salva! Próxima: '+(osNum+1));setTimeout(carregarProximaOS,500);}else{if(mostrarPop)pop('Aviso','OS já existe');}}
-function filtrarOS(){let busca=document.getElementById('buscaOS').value.toLowerCase();let empFiltro=document.getElementById('filtroEmpresa').value;let mesFiltro=document.getElementById('filtroMes').value;let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');let filtrada=lista.filter(o=>{let matchBusca=!busca||o.empresa.toLowerCase().includes(busca)||o.num.toString().includes(busca)||(o.tec&&o.tec.toLowerCase().includes(busca));let matchEmp=!empFiltro||o.empresa===empFiltro;let matchMes=!mesFiltro||o.mes===mesFiltro||o.data.substring(5,7)===mesFiltro;return matchBusca&&matchEmp&&matchMes;});let div=document.getElementById('listaOS');if(!div)return;div.innerHTML=filtrada.map(o=>`<div class="item"><b>OS ${o.num}</b> - ${o.empresa} - ${o.data}<br><small>${o.horas}h - ${o.tec}</small><br><div style="display:flex;gap:4px;margin-top:6px"><button onclick="restaurarOS(${o.id})" style="flex:1;font-size:10px;padding:6px;background:#007bff;color:#fff;border:none;border-radius:6px">Restaurar</button><button onclick="delOS(${o.id})" style="flex:1;font-size:10px;padding:6px;background:${isAdminMode?'#c81e1e':'#555'};color:#fff;border:none;border-radius:6px">Excluir</button><button onclick="enviarWhatsAppOS(${o.id})" style="flex:1;font-size:10px;padding:6px;background:#25d366;color:#fff;border:none;border-radius:6px">WhatsApp</button></div></div>`).join('')||'<p style="color:#999">Nenhuma OS</p>';}
+function salvarAss(){pop('Assinatura','Salva, vai aparecer no PDF')}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='os'){
+    setTimeout(()=>{initCanvas();gerarQRCodeAuto();},200);
+    carregarEmpresasNoSelect();
+    carregarEquipNoSelect();
+    if(!document.getElementById('osData').value)document.getElementById('osData').valueAsDate=new Date();
+    preencherTabelasOS();
+  }
+  if(id==='cadEquip')carregarEmpresasParaEquip();
+  if(id==='dashboardUser')carregarDashboardUser();
+  if(id==='adminPanel'){carregarAdminTudo()}
+  if(id==='menu'){atualizarStats()}
+  if(id==='cadEmpresa')listarEmpresas();
+  if(id==='cadEquip')listarEquip();
+  if(id==='backupScreen')listarBackups();
+}
+
+function preencherTabelasOS(){
+  let s=document.getElementById('servBody');
+  if(s&&s.children.length==0){
+    let h='';for(let i=1;i<=8;i++)h+=`<tr><td>${i}</td><td><textarea placeholder="Serviço ${i}"></textarea></td></tr>`;
+    s.innerHTML=h;
+  }
+  let p=document.getElementById('pecaBody');
+  if(p&&p.children.length==0){
+    let h='';for(let i=1;i<=6;i++)h+=`<tr><td>${i}</td><td><input type="number"></td><td><input placeholder="Peça ${i}"></td></tr>`;
+    p.innerHTML=h;
+  }
+}
+
+function gerarQRCodeAuto(){
+  let osNum=document.getElementById('numOS').value||'4072';
+  let empresa=document.getElementById('osEmpresa').value||document.getElementById('osEmpresaDisplay').value||'BETHEC';
+  let texto=`BETHEC OS:${osNum} | ${empresa} | ${new Date().toLocaleDateString('pt-BR')}`;
+  let el1=document.getElementById('qrcode');
+  if(el1){el1.innerHTML='';try{new QRCode(el1,{text:texto,width:70,height:70});}catch(e){}}
+  ['qrcode2','qrcodePDF'].forEach(id=>{
+    let el=document.getElementById(id);
+    if(el){el.innerHTML='';try{new QRCode(el,{text:texto,width:80,height:80});}catch(e){}}
+  });
+  document.getElementById('osNumSpan').textContent=osNum;
+}
+
+function preencherEmpresaOS(){
+  let id=document.getElementById('osEmpresaSelect').value;
+  if(!id)return;
+  let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');
+  let emp=lista.find(e=>e.id==id);
+  if(emp){
+    document.getElementById('osEmpresa').value=emp.nome;
+    document.getElementById('osEmpresaDisplay').value=emp.nome;
+    document.getElementById('osCidadeAuto').value=emp.cidade;
+    setTimeout(gerarQRCodeAuto,200);
+  }
+}
+
+function preencherEquipOS(){
+  let id=document.getElementById('osMarcaSelect').value;
+  if(!id)return;
+  let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');
+  let eq=lista.find(e=>e.id==id);
+  if(eq){
+    document.getElementById('osMarca').value=eq.marca;
+    document.getElementById('osMarcaDisplay').value=eq.marca;
+    document.getElementById('osModeloAuto').value=eq.modelo;
+    document.getElementById('osFrotaAuto').value=eq.frota;
+    setTimeout(gerarQRCodeAuto,200);
+  }
+}
+
+function gerarPDF2Pag(){
+  salvarOSNoHistorico(false);
+  gerarQRCodeAuto();
+  const osNum=document.getElementById('numOS').value||'4072';
+  const area=document.getElementById('pdfArea');
+  const botoes=document.getElementById('botoes');
+  botoes.style.display='none';
+  let opt={margin:2,filename:'OS-BETHEC-'+osNum+'.pdf',image:{type:'jpeg',quality:0.92},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};
+  html2pdf().set(opt).from(area).save().then(()=>{
+    botoes.style.display='flex';
+    pop('PDF Gerado','PDF: OS-BETHEC-'+osNum+'.pdf');
+  });
+}
+
+function previewFoto(input,num){
+  if(input.files&&input.files[0]){
+    let reader=new FileReader();
+    reader.onload=function(e){
+      let img=document.getElementById('p'+num);
+      img.src=e.target.result;
+      img.style.display='block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function salvarEmpresa(){
+  let nome=document.getElementById('empNome').value.trim();
+  if(!nome)return pop('Erro','Nome obrigatório');
+  let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');
+  lista.push({id:Date.now(),nome,cidade:document.getElementById('empCidade').value,contato:document.getElementById('empContato').value});
+  localStorage.setItem('bethec_empresas',JSON.stringify(lista));
+  pop('Salvo','Empresa salva');
+  listarEmpresas();
+  document.getElementById('empNome').value='';
+}
+function listarEmpresas(){
+  let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');
+  let div=document.getElementById('listaEmpresas');
+  if(div)div.innerHTML=lista.map(e=>`<div class="item"><b>${e.nome}</b> - ${e.cidade}<br><button onclick="delEmpresa(${e.id})" style="font-size:10px;margin-top:4px">Excluir</button></div>`).join('')||'<p style="color:#999">Nenhuma empresa</p>';
+}
+function delEmpresa(id){
+  if(!confirm('Excluir empresa?'))return;
+  let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');
+  lista=lista.filter(e=>e.id!=id);
+  localStorage.setItem('bethec_empresas',JSON.stringify(lista));
+  listarEmpresas();
+  atualizarStats();
+}
+function carregarEmpresasNoSelect(){
+  let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');
+  let sel=document.getElementById('osEmpresaSelect');
+  if(sel)sel.innerHTML='<option value="">Selecione</option>'+lista.map(e=>`<option value="${e.id}">${e.nome} - ${e.cidade}</option>`).join('');
+}
+function carregarEmpresasParaEquip(){
+  let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');
+  let sel=document.getElementById('equipEmpresaSelect');
+  if(sel)sel.innerHTML=lista.map(e=>`<option value="${e.nome}">${e.nome}</option>`).join('');
+}
+function salvarEquip(){
+  let marca=document.getElementById('equipMarca').value.trim();
+  if(!marca)return pop('Erro','Marca obrigatória');
+  let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');
+  lista.push({id:Date.now(),marca,modelo:document.getElementById('equipModelo').value,frota:document.getElementById('equipFrota').value});
+  localStorage.setItem('bethec_equipamentos',JSON.stringify(lista));
+  pop('Salvo','Equipamento salvo');
+  listarEquip();
+}
+function listarEquip(){
+  let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');
+  let div=document.getElementById('listaEquip');
+  if(div)div.innerHTML=lista.map(e=>`<div class="item"><b>${e.marca} ${e.modelo}</b> - ${e.frota}<br><button onclick="delEquip(${e.id})" style="font-size:10px;margin-top:4px">Excluir</button></div>`).join('')||'<p style="color:#999">Nenhum equipamento</p>';
+}
+function delEquip(id){
+  if(!confirm('Excluir?'))return;
+  let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');
+  lista=lista.filter(e=>e.id!=id);
+  localStorage.setItem('bethec_equipamentos',JSON.stringify(lista));
+  listarEquip();
+  atualizarStats();
+}
+function carregarEquipNoSelect(){
+  let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');
+  let sel=document.getElementById('osMarcaSelect');
+  if(sel)sel.innerHTML='<option value="">Selecione</option>'+lista.map(e=>`<option value="${e.id}">${e.marca} ${e.modelo} - ${e.frota}</option>`).join('');
+}
+function salvarOSNoHistorico(mostrarPop=true){
+  let osNum=document.getElementById('numOS').value||'4072';
+  let os={id:Date.now(),num:osNum,empresa:document.getElementById('osEmpresa').value||document.getElementById('osEmpresaDisplay').value,data:document.getElementById('osData').value||new Date().toISOString().split('T')[0]};
+  let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');
+  lista.unshift(os);
+  localStorage.setItem('bethec_os',JSON.stringify(lista.slice(0,200)));
+  if(mostrarPop)pop('Salvo','OS '+osNum+' salva no histórico');
+}
+function filtrarOS(){
+  let busca=document.getElementById('buscaOS').value.toLowerCase();
+  let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');
+  let filtrada=lista.filter(o=>!busca||o.empresa.toLowerCase().includes(busca)||o.num.toString().includes(busca));
+  let div=document.getElementById('listaOS');
+  if(div)div.innerHTML=filtrada.map(o=>`<div class="item"><b>OS ${o.num}</b> - ${o.empresa} - ${o.data}<br><button onclick="delOS(${o.id})" style="font-size:10px;margin-top:4px">Excluir</button></div>`).join('')||'<p style="color:#999">Nenhuma OS</p>';
+}
 function carregarDashboardUser(){filtrarOS();}
-function restaurarOS(id){let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');let os=lista.find(o=>o.id==id);if(os){document.getElementById('numOS').value=os.num;document.getElementById('osEmpresaDisplay').value=os.empresa;document.getElementById('osEmpresa').value=os.empresa;document.getElementById('osData').value=os.data;document.getElementById('osHoras').value=os.horas;document.getElementById('obs').value=os.obs||'';document.getElementById('tecNome').value=os.tec||'';show('os');pop('Restaurado','OS '+os.num+' carregada');}}
-function delOS(id){if(!isAdminMode&&!confirm('Excluir OS?'))return;if(isAdminMode||confirm('Confirmar exclusão da OS?')){let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');lista=lista.filter(o=>o.id!=id);localStorage.setItem('bethec_os',JSON.stringify(lista));filtrarOS();carregarAdminTudo();atualizarStats();pop('Excluída','OS excluída');}}
-function atualizarStats(){let listaOS=JSON.parse(localStorage.getItem('bethec_os')||'[]');let listaEmp=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');let listaEquip=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');['statOS','statOS2'].forEach(id=>{let el=document.getElementById(id);if(el)el.textContent=listaOS.length});let empEl=document.getElementById('statEmp');if(empEl)empEl.textContent=listaEmp.length;let equipEl=document.getElementById('statEquip');if(equipEl)equipEl.textContent=listaEquip.length;let countEmp=document.getElementById('countEmp');if(countEmp)countEmp.textContent=listaEmp.length+' empresas';let countEquip=document.getElementById('countEquip');if(countEquip)countEquip.textContent=listaEquip.length+' equipamentos';}
-function enviarWhatsApp(){let osNum=document.getElementById('numOS').value||'4072';let empresa=document.getElementById('osEmpresa').value||document.getElementById('osEmpresaDisplay').value||'Cliente';let data=document.getElementById('osData').value||new Date().toLocaleDateString('pt-BR');let urlBase=window.location.origin+window.location.pathname.replace('index.html','')+'validar.html';let linkValidacao=`${urlBase}?os=${osNum}&emp=${encodeURIComponent(empresa)}&data=${data}`;let mensagem=`*BETHEC EMPILHADEIRAS - OS ${osNum}*\n\nEmpresa: ${empresa}\nData: ${data}\n\n🔍 Validar: ${linkValidacao}\n\n✅ Documento oficial`;window.open(`https://wa.me/?text=${encodeURIComponent(mensagem)}`,'_blank');}
-function enviarWhatsAppOS(id){let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');let os=lista.find(o=>o.id==id);if(!os)return;let urlBase=window.location.origin+window.location.pathname.replace('index.html','')+'validar.html';let linkValidacao=`${urlBase}?os=${os.num}&emp=${encodeURIComponent(os.empresa)}&data=${os.data}`;let mensagem=`*BETHEC - OS ${os.num}*\nEmpresa: ${os.empresa}\nData: ${os.data}\n\n🔍 Validar: ${linkValidacao}`;window.open(`https://wa.me/?text=${encodeURIComponent(mensagem)}`,'_blank');}
-function downloadOS(){gerarQRCodeAuto();const osNum=document.getElementById('numOS').value||'4072';const area=document.getElementById('pdfArea');const botoes=document.getElementById('botoes');botoes.style.display='none';let opt={margin:2,filename:'OS-BETHEC-'+osNum+'-TIMBRADO.pdf',image:{type:'jpeg',quality:0.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};html2pdf().set(opt).from(area).save().then(()=>{botoes.style.display='flex';pop('⬇️ Download','PDF salvo: OS-BETHEC-'+osNum+'.pdf');});}
-function downloadBackupJSON(){let backup={data:new Date().toISOString(),empresas:JSON.parse(localStorage.getItem('bethec_empresas')||'[]'),equipamentos:JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]'),os:JSON.parse(localStorage.getItem('bethec_os')||'[]')};let blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download='BETHEC-BACKUP-'+new Date().toISOString().split('T')[0]+'.json';a.click();URL.revokeObjectURL(url);pop('⬇️ Backup','JSON salvo em Downloads');}
-function downloadTodasOS(){let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');if(lista.length===0)return pop('Erro','Nenhuma OS');let csv='NUMERO,EMPRESA,DATA,HORAS,TECNICO\n';lista.forEach(o=>{csv+=`"${o.num}","${o.empresa}","${o.data}","${o.horas}","${o.tec}"\n`;});let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download='BETHEC-OS-TODAS-'+new Date().toISOString().split('T')[0]+'.csv';a.click();URL.revokeObjectURL(url);pop('⬇️ CSV','Excel salvo');}
-function gerarBackupCompleto(auto){let backup={data:new Date().toISOString(),empresas:JSON.parse(localStorage.getItem('bethec_empresas')||'[]'),equipamentos:JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]'),os:JSON.parse(localStorage.getItem('bethec_os')||'[]')};localStorage.setItem('bethec_backup_'+Date.now(),JSON.stringify(backup));if(!auto)pop('Backup','Backup gerado');listarBackups();}
-function listarBackups(){let div=document.getElementById('listaBackups');if(!div)return;let keys=Object.keys(localStorage).filter(k=>k.startsWith('bethec_backup_'));div.innerHTML=keys.reverse().slice(0,5).map(k=>{let b=JSON.parse(localStorage.getItem(k));return `<div class="item"><b>${new Date(b.data).toLocaleString('pt-BR')}</b><br><small>${b.empresas.length} emp, ${b.equipamentos.length} equip, ${b.os.length} OS</small></div>`}).join('')||'<p style="color:#999">Nenhum backup</p>';}
-// ADMIN TOTAL
-function loginAdmin(){let email=document.getElementById('aEmail').value.trim().toLowerCase();let senha=document.getElementById('aSenha').value;if(email==='admin@bethec.com'&&senha==='bethec2024'){isAdminMode=true;let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');let admin=users.find(u=>u.email===email);if(!admin){admin={id:1,nome:'Admin Total',email,senha,isAdmin:true};users.push(admin);localStorage.setItem('bethec_users',JSON.stringify(users));}localStorage.setItem('bethec_logged_user',JSON.stringify(admin));document.getElementById('userRoleInfo').innerHTML='👑 <span style="color:#ff2a2a">MODO ADMIN TOTAL - Acesso total</span>';document.getElementById('cardAdmin').style.display='flex';show('adminPanel');}else{pop('Erro','Credenciais admin inválidas - admin@bethec.com / bethec2024');}}
-function carregarAdminTudo(){let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');let os=JSON.parse(localStorage.getItem('bethec_os')||'[]');let emp=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');let equip=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');document.getElementById('admUsers').textContent=users.length;document.getElementById('admOS').textContent=os.length;document.getElementById('admEmp').textContent=emp.length;document.getElementById('admEquip').textContent=equip.length;tabAdmin('users');}
-function tabAdmin(tipo){document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));let tab=document.getElementById('tab-'+tipo);if(tab)tab.classList.add('active');let div=document.getElementById('adminConteudo');if(tipo==='users'){let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');div.innerHTML=users.map(u=>`<div class="item"><b>${u.nome}</b> - ${u.email} ${u.isAdmin?'<span style="color:#ff2a2a">👑 ADMIN</span>':''}<br><div style="display:flex;gap:4px;margin-top:6px"><button onclick="delUser(${u.id})" style="font-size:10px;padding:6px 10px;background:#c81e1e;color:#fff;border:none;border-radius:6px">Excluir Usuário</button></div></div>`).join('')||'<p>Nenhum usuário</p>';}else if(tipo==='os'){let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');div.innerHTML=lista.map(o=>`<div class="item"><b>OS ${o.num}</b> - ${o.empresa} - ${o.data}<br><small>${o.horas}h - ${o.tec}</small><br><div style="display:flex;gap:4px;margin-top:6px"><button onclick="restaurarOS(${o.id})" style="font-size:10px;padding:6px 10px;background:#007bff;color:#fff;border:none;border-radius:6px">Restaurar</button><button onclick="delOS(${o.id})" style="font-size:10px;padding:6px 10px;background:#c81e1e;color:#fff;border:none;border-radius:6px">Excluir OS</button></div></div>`).join('')||'<p>Nenhuma OS</p>';}else if(tipo==='empresas'){let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');div.innerHTML=lista.map(e=>`<div class="item"><b>${e.nome}</b> - ${e.cidade}/${e.estado}<br><button onclick="delEmpresa(${e.id})" style="font-size:10px;margin-top:4px;background:#c81e1e;color:#fff;border:none;padding:6px 10px;border-radius:6px">Excluir Empresa</button></div>`).join('')||'<p>Nenhuma empresa</p>';}else if(tipo==='equip'){let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');div.innerHTML=lista.map(e=>`<div class="item"><b>${e.marca} ${e.modelo}</b> - ${e.frota}<br><button onclick="delEquip(${e.id})" style="font-size:10px;margin-top:4px;background:#c81e1e;color:#fff;border:none;padding:6px 10px;border-radius:6px">Excluir Equip</button></div>`).join('')||'<p>Nenhum equipamento</p>';}else{div.innerHTML=`<div class="item"><b>Backup e Limpeza Total</b><br><small>Cuidado: ações irreversíveis</small><br><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px"><button onclick="downloadBackupJSON()" style="padding:10px;background:#333;color:#fff;border:none;border-radius:8px">⬇️ Baixar Backup JSON</button><button onclick="downloadTodasOS()" style="padding:10px;background:#333;color:#fff;border:none;border-radius:8px">⬇️ Baixar Todas OS CSV</button><button onclick="limparTudoAdmin()" style="padding:10px;background:#c81e1e;color:#fff;border:none;border-radius:8px;font-weight:800">🗑️ APAGAR TUDO (TODAS OS, EMPRESAS, EQUIP)</button></div></div>`;}}
-function delUser(id){if(!confirm('Excluir usuário?'))return;let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');users=users.filter(u=>u.id!=id);localStorage.setItem('bethec_users',JSON.stringify(users));carregarAdminTudo();}
-function limparTudoAdmin(){if(!isAdminMode){pop('Erro','Só admin pode limpar tudo');return}if(!confirm('⚠️ TEM CERTEZA? Vai apagar TODAS OS, empresas e equipamentos!'))return;if(!confirm('CONFIRMAÇÃO FINAL: Apagar tudo mesmo?'))return;localStorage.removeItem('bethec_os');localStorage.removeItem('bethec_empresas');localStorage.removeItem('bethec_equipamentos');localStorage.removeItem('bethec_ultimo_os');pop('🗑️ Limpeza Total','Tudo apagado!');carregarAdminTudo();atualizarStats();}
-// INSTALL APP DISCRETO - FIX
-window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e;console.log('App pronto para instalar - modo discreto');let link1=document.getElementById('linkInstalar');let link2=document.getElementById('linkInstalar2');if(link1)link1.style.display='inline';if(link2)link2.style.display='inline';});
-function instalarApp(){let isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);let isInStandalone=window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches;if(isInStandalone){pop('✅ Já Instalado','App já instalado como aplicativo nativo!');return}if(isIOS){let hint=document.getElementById('iosHint');if(hint)hint.style.display='block';pop('📲 Instalar no iPhone','1 - Toque em Compartilhar ⬆️\n2 - Adicionar à Tela de Início\n3 - Adicionar');return}if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then((choice)=>{if(choice.outcome==='accepted'){pop('✅ Instalando...','App BETHEC sendo instalado na tela inicial! Procure o ícone BETHEC na sua tela inicial.');}else{pop('Instalar App','Você pode instalar depois: Chrome > 3 pontinhos > Instalar app');}deferredPrompt=null;});}else{pop('📲 Instalar App BETHEC','Para instalar o app:\n\nAndroid Chrome:\n1 - 3 pontinhos ⋮ no canto superior direito\n2 - "Instalar app" ou "Adicionar à tela inicial"\n3 - Instalar\n\nSe não aparecer a opção, o app já está instalado ou você precisa acessar via HTTPS (GitHub Pages já é HTTPS).\n\nLink direto: https://bruhghost-frontdesign.github.io/betech-novo/');}}
-function fazerLogin(){let email=document.getElementById('lEmail').value.trim().toLowerCase();let senha=document.getElementById('lSenha').value;let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');let user=users.find(u=>u.email===email&&u.senha===senha);if(!user){document.getElementById('loginHint').textContent='E-mail ou senha incorretos';return}localStorage.setItem('bethec_logged_user',JSON.stringify(user));isAdminMode=user.isAdmin||user.email==='admin@bethec.com';if(isAdminMode){document.getElementById('cardAdmin').style.display='flex';document.getElementById('userRoleInfo').innerHTML='👑 <span style="color:#ff2a2a">MODO ADMIN TOTAL</span>';}document.getElementById('userEmailLog').textContent='Logado: '+user.email;show('menu');}
-function fazerCadastro(){let nome=document.getElementById('cNome').value.trim();let email=document.getElementById('cEmail').value.trim().toLowerCase();let senha=document.getElementById('cSenha').value;if(!nome||!email||!senha){document.getElementById('cadHint').textContent='Preencha tudo';return}let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');if(users.find(u=>u.email===email)){document.getElementById('cadHint').textContent='E-mail já cadastrado';return}users.push({id:Date.now(),nome,email,senha,isAdmin:false});localStorage.setItem('bethec_users',JSON.stringify(users));pop('Sucesso','Conta criada! Faça login');show('login');}
-function fazerLogout(){localStorage.removeItem('bethec_logged_user');isAdminMode=false;show('login');}
-function pop(t,m){document.getElementById('popT').textContent=t;document.getElementById('popM').textContent=m;document.getElementById('pop').classList.add('show');}
+function delOS(id){
+  if(!confirm('Excluir OS?'))return;
+  let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');
+  lista=lista.filter(o=>o.id!=id);
+  localStorage.setItem('bethec_os',JSON.stringify(lista));
+  filtrarOS();
+  atualizarStats();
+}
+function atualizarStats(){
+  let listaOS=JSON.parse(localStorage.getItem('bethec_os')||'[]');
+  let listaEmp=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');
+  let listaEquip=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');
+  let el=document.getElementById('statOS');if(el)el.textContent=listaOS.length;
+  let empEl=document.getElementById('statEmp');if(empEl)empEl.textContent=listaEmp.length;
+  let equipEl=document.getElementById('statEquip');if(equipEl)equipEl.textContent=listaEquip.length;
+}
+function downloadOS(){
+  gerarQRCodeAuto();
+  const osNum=document.getElementById('numOS').value||'4072';
+  const area=document.getElementById('pdfArea');
+  const botoes=document.getElementById('botoes');
+  botoes.style.display='none';
+  let opt={margin:2,filename:'OS-BETHEC-'+osNum+'.pdf',image:{type:'jpeg',quality:0.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};
+  html2pdf().set(opt).from(area).save().then(()=>{
+    botoes.style.display='flex';
+    pop('Download','PDF salvo: OS-BETHEC-'+osNum+'.pdf');
+  });
+}
+function downloadBackupJSON(){
+  let backup={empresas:JSON.parse(localStorage.getItem('bethec_empresas')||'[]'),equipamentos:JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]'),os:JSON.parse(localStorage.getItem('bethec_os')||'[]')};
+  let blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  let url=URL.createObjectURL(blob);
+  let a=document.createElement('a');a.href=url;a.download='BETHEC-BACKUP-'+new Date().toISOString().split('T')[0]+'.json';a.click();URL.revokeObjectURL(url);
+  pop('Backup','Backup baixado');
+}
+function downloadTodasOS(){
+  let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');
+  if(lista.length===0)return pop('Erro','Nenhuma OS');
+  let csv='NUMERO,EMPRESA,DATA\n';
+  lista.forEach(o=>{csv+=`"${o.num}","${o.empresa}","${o.data}"\n`;});
+  let blob=new Blob([csv],{type:'text/csv'});
+  let url=URL.createObjectURL(blob);
+  let a=document.createElement('a');a.href=url;a.download='BETHEC-OS.csv';a.click();URL.revokeObjectURL(url);
+  pop('CSV','CSV baixado');
+}
+function listarBackups(){}
+function carregarAdminTudo(){
+  let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');
+  let os=JSON.parse(localStorage.getItem('bethec_os')||'[]');
+  let emp=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');
+  let equip=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');
+  document.getElementById('admUsers').textContent=users.length;
+  document.getElementById('admOS').textContent=os.length;
+  document.getElementById('admEmp').textContent=emp.length;
+  document.getElementById('admEquip').textContent=equip.length;
+  tabAdmin('users');
+}
+function tabAdmin(tipo){
+  let div=document.getElementById('adminConteudo');
+  if(tipo==='users'){
+    let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');
+    div.innerHTML=users.map(u=>`<div class="item"><b>${u.nome}</b> - ${u.email} ${u.isAdmin?'👑 ADMIN':''}<br><button onclick="delUser(${u.id})" style="font-size:10px;margin-top:4px;background:#c81e1e;color:#fff;border:none;padding:6px 10px;border-radius:6px">Excluir</button></div>`).join('')||'<p>Nenhum usuário</p>';
+  }else if(tipo==='os'){
+    let lista=JSON.parse(localStorage.getItem('bethec_os')||'[]');
+    div.innerHTML=lista.map(o=>`<div class="item"><b>OS ${o.num}</b> - ${o.empresa}<br><button onclick="delOS(${o.id})" style="font-size:10px;background:#c81e1e;color:#fff;border:none;padding:6px 10px;border-radius:6px">Excluir OS</button></div>`).join('')||'<p>Nenhuma OS</p>';
+  }else if(tipo==='empresas'){
+    let lista=JSON.parse(localStorage.getItem('bethec_empresas')||'[]');
+    div.innerHTML=lista.map(e=>`<div class="item"><b>${e.nome}</b><br><button onclick="delEmpresa(${e.id})" style="font-size:10px;background:#c81e1e;color:#fff;border:none;padding:6px 10px;border-radius:6px">Excluir</button></div>`).join('')||'<p>Nenhuma</p>';
+  }else{
+    let lista=JSON.parse(localStorage.getItem('bethec_equipamentos')||'[]');
+    div.innerHTML=lista.map(e=>`<div class="item"><b>${e.marca} ${e.modelo}</b><br><button onclick="delEquip(${e.id})" style="font-size:10px;background:#c81e1e;color:#fff;border:none;padding:6px 10px;border-radius:6px">Excluir</button></div>`).join('')||'<p>Nenhum</p>';
+  }
+}
+function delUser(id){
+  if(!confirm('Excluir usuário?'))return;
+  let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');
+  users=users.filter(u=>u.id!=id);
+  localStorage.setItem('bethec_users',JSON.stringify(users));
+  carregarAdminTudo();
+}
+
+function fazerLogin(){
+  let email=document.getElementById('lEmail').value.trim().toLowerCase();
+  let senha=document.getElementById('lSenha').value;
+  let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');
+  let user=users.find(u=>u.email===email&&u.senha===senha);
+  if(!user){document.getElementById('loginHint').textContent='E-mail ou senha incorretos';return}
+  localStorage.setItem('bethec_logged_user',JSON.stringify(user));
+  isAdminMode = (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+  document.getElementById('cardAdmin').style.display = isAdminMode ? 'flex' : 'none';
+  document.getElementById('userRoleInfo').textContent = isAdminMode ? '👑 MODO ADMIN TOTAL - Bruh_ghost@hotmail.com' : 'Usuário: '+user.email;
+  document.getElementById('userEmailLog').textContent='Logado: '+user.email;
+  show('menu');
+}
+
+function loginAdmin(){
+  let email=document.getElementById('aEmail').value.trim().toLowerCase();
+  let senha=document.getElementById('aSenha').value;
+  if(email.toLowerCase()===ADMIN_EMAIL.toLowerCase() && senha===ADMIN_SENHA){
+    isAdminMode=true;
+    let admin={id:9999,nome:'Admin Bruh_ghost',email:ADMIN_EMAIL,senha:ADMIN_SENHA,isAdmin:true};
+    localStorage.setItem('bethec_logged_user',JSON.stringify(admin));
+    let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');
+    if(!users.find(u=>u.email.toLowerCase()===ADMIN_EMAIL.toLowerCase())){
+      users.push(admin);
+      localStorage.setItem('bethec_users',JSON.stringify(users));
+    }
+    document.getElementById('cardAdmin').style.display='flex';
+    document.getElementById('userRoleInfo').textContent='👑 MODO ADMIN TOTAL - Bruh_ghost@hotmail.com';
+    document.getElementById('userEmailLog').textContent='Logado como ADMIN TOTAL: '+ADMIN_EMAIL;
+    show('adminPanel');
+  }else{
+    pop('Erro','Credenciais inválidas\nUse:\nBruh_ghost@hotmail.com\nSofia919521*');
+  }
+}
+
+function fazerCadastro(){
+  let nome=document.getElementById('cNome').value.trim();
+  let email=document.getElementById('cEmail').value.trim().toLowerCase();
+  let senha=document.getElementById('cSenha').value;
+  if(!nome||!email||!senha){document.getElementById('cadHint').textContent='Preencha tudo';return}
+  let users=JSON.parse(localStorage.getItem('bethec_users')||'[]');
+  if(users.find(u=>u.email===email)){document.getElementById('cadHint').textContent='E-mail já cadastrado';return}
+  let isAdmin = (email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
+  users.push({id:Date.now(),nome,email,senha,isAdmin:isAdmin});
+  localStorage.setItem('bethec_users',JSON.stringify(users));
+  pop('Sucesso','Conta criada! Faça login');
+  show('login');
+}
+
+function fazerLogout(){
+  localStorage.removeItem('bethec_logged_user');
+  isAdminMode=false;
+  document.getElementById('cardAdmin').style.display='none';
+  show('login');
+}
+
+function pop(t,m){
+  document.getElementById('popT').textContent=t;
+  document.getElementById('popM').textContent=m;
+  document.getElementById('pop').classList.add('show');
+}
 function closePop(){document.getElementById('pop').classList.remove('show');}
-window.addEventListener('load',()=>{initCanvas();let u=JSON.parse(localStorage.getItem('bethec_logged_user')||'null');if(u){document.getElementById('userEmailLog').textContent='Logado: '+u.email;isAdminMode=u.isAdmin||u.email==='admin@bethec.com';if(isAdminMode){document.getElementById('cardAdmin').style.display='flex';document.getElementById('userRoleInfo').innerHTML='👑 <span style="color:#ff2a2a">MODO ADMIN TOTAL</span>';}show('menu');}atualizarStats();carregarProximaOS();});
+
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  let l1=document.getElementById('linkInstalar');
+  let l2=document.getElementById('linkInstalar2');
+  let l3=document.getElementById('linkInstalar3');
+  if(l1)l1.style.display='inline';
+  if(l2)l2.style.display='inline';
+  if(l3)l3.style.display='inline';
+});
+
+function instalarApp(){
+  let isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  let isInStandalone=window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches;
+  if(isInStandalone){pop('✅ Já instalado','App já está instalado');return}
+  if(isIOS){pop('📲 iPhone','Compartilhar ⬆️ > Adicionar à Tela de Início');return}
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice=>{
+      if(choice.outcome==='accepted'){pop('✅ Instalando','App na tela inicial!')}
+      deferredPrompt=null;
+    });
+  }else{
+    pop('📲 Instalar App','Chrome: 3 pontinhos > Instalar app\nLink: https://bruhghost-frontdesign.github.io/betech-novo/');
+  }
+}
+
+window.addEventListener('load',()=>{
+  initCanvas();
+  let u=JSON.parse(localStorage.getItem('bethec_logged_user')||'null');
+  if(u){
+    isAdminMode=(u.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
+    document.getElementById('cardAdmin').style.display=isAdminMode?'flex':'none';
+    document.getElementById('userEmailLog').textContent='Logado: '+u.email;
+    document.getElementById('userRoleInfo').textContent=isAdminMode?'👑 MODO ADMIN TOTAL - Bruh_ghost@hotmail.com':'Usuário: '+u.email;
+    show('menu');
+  }
+  atualizarStats();
+});
