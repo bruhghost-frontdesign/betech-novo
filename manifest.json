@@ -1,22 +1,24 @@
 {
   "name": "BETHEC Empilhadeiras",
-  "short_name": "BETHEC OS",
-  "description": "Sistema Completo BETHEC - Sorocaba SP",
+  "short_name": "BETHEC",
+  "description": "Sistema Completo BETHEC Empilhadeiras - Sorocaba SP",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#070707",
-  "theme_color": "#c81e1e",
+  "theme_color": "#070707",
+  "orientation": "portrait",
   "icons": [
+    {
+      "src": "./logo_original.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "./logo_original.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    },
-    {
-      "src": "./bethec_final_preto.png",
-      "sizes": "512x512",
-      "type": "image/png"
     }
   ]
 }
