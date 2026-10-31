@@ -4,36 +4,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BETHEC - App Oficial</title>
-<link rel="stylesheet" href="./style.css">
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#000000">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-.folha{font-size:13px;background:#fff}
-#sigCanvas{width:100%;height:140px;border:2px solid #000;background:#fff;touch-action:none;border-radius:4px}
-.foto-btns{display:flex;gap:8px;justify-content:center;margin:8px 0}
-.foto-btns label{background:#007bff;color:#fff;padding:12px 16px;border-radius:6px;cursor:pointer;font-size:15px;font-weight:bold}
-.foto-btns label.galeria{background:#555}
-.foto-btns input{display:none}
-.fotos img{max-width:100%;margin-top:6px;border:1px solid #ddd;border-radius:6px;display:none}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Arial,sans-serif}
+body{background:#f0f0f0;min-height:100vh;display:flex;justify-content:center}
+.screen{width:100%;max-width:520px;background:#fff;padding:20px;display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+.splash{align-items:center;justify-content:center;text-align:center;background:#fff}
+.splash img{width:260px;max-width:90%}
+.splash h1{font-size:28px;margin-top:20px;font-weight:900}
+.splash h1 span{color:#b91c1c}
+.actions{width:100%;max-width:360px;margin-top:30px;display:flex;flex-direction:column;gap:12px}
+.btn{width:100%;padding:16px;border-radius:14px;border:none;font-weight:800;font-size:15px;cursor:pointer}
+.btn-black{background:#000;color:#fff}.btn-red{background:#b91c1c;color:#fff}.btn-white{background:#fff;border:2px solid #000;color:#000}.btn.small{font-size:12px;opacity:.7}
+.mt{margin-top:10px}.input{border:2px solid #000;border-radius:12px;padding:10px 40px;margin-bottom:10px;position:relative}
+.input.dark{background:#111;border-color:#b91c1c;color:#fff}.input.dark input{color:#fff}
+.input label{font-size:10px;font-weight:700;display:block}.input input{width:100%;border:none;outline:none;background:transparent;font-size:15px}
+.eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer}
+.hint{font-size:11px;color:#b91c1c;margin:-5px 0 10px 4px}.hint.ok{color:#16a34a}
+.card{border:2px solid #000;border-radius:12px;padding:14px;margin-bottom:10px;font-weight:700;cursor:pointer}
+.card.red{background:#b91c1c;color:#fff;border-color:#b91c1c}.card.black{background:#000;color:#fff}
+.top{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:2px solid #eee;margin-bottom:12px}.top img{width:90px}
+.popup{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:9999}
+.popup.show{display:flex}.popup .box{background:#fff;padding:24px;border-radius:16px;max-width:320px;width:90%;text-align:center;border:3px solid #000}
+.download{position:fixed;bottom:15px;right:15px;font-size:12px;background:#fff;border:1px solid #ddd;padding:10px 16px;border-radius:30px;cursor:pointer;z-index:20;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.info{background:#f3f3f3;padding:8px;border-radius:8px;margin-top:12px;font-size:11px}.row{display:flex;gap:6px;margin-bottom:10px}
+.logged{margin-top:10px;font-size:11px}.sub{color:#aaa;font-size:12px;text-align:center;margin-bottom:10px}
+.folha{font-size:13px;background:#fff;border:3px solid #000;border-radius:8px;overflow:hidden}
 .topo{display:flex;gap:10px;align-items:center;padding:10px;border-bottom:3px solid #000}
 .topo img{width:110px}.info{font-size:9px;line-height:1.3}
-.box{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;border:1px solid #000;margin-top:8px}
-.box div{font-size:11px}.box input, .box textarea{width:100%;padding:6px;min-height:32px;border:1px solid #000;border-radius:4px}
-.tipos{grid-column:1 / -1;display:flex;gap:10px;align-items:center;padding:4px}
-.rodape{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;border-top:2px solid #000;padding-top:8px}
-.q{border:1px solid #000;padding:6px;border-radius:6px;font-size:11px}
-.q input{border:none;border-bottom:1px dotted #999;width:100%}
-.no-print{margin-top:10px}
-#botoes{display:flex;gap:8px}
+table{width:100%;border-collapse:collapse;margin-bottom:8px}th{background:#000;color:#fff;font-size:10px;padding:6px;border:1px solid #000}td{border:1px solid #000;padding:2px;height:28px}
+table input, table textarea{width:100%;border:none;outline:none;padding:6px;min-height:32px}
+h3{padding:8px;font-size:13px;background:#000;color:#fff;margin-top:0}
+.fotos{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px;background:#fafafa;border-top:1px solid #000;border-bottom:1px solid #000}
+.foto{border:1px solid #000;border-radius:8px;padding:8px;background:#fff;text-align:center}
+.foto strong{font-size:11px;display:block;margin-bottom:6px}
+.foto-btns{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.foto-btns label{background:#007bff;color:#fff;padding:10px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold}
+.foto-btns label.galeria{background:#555}.foto-btns input{display:none}
+.fotos img{max-width:100%;margin-top:8px;border:1px solid #ddd;border-radius:6px;display:none;max-height:200px}
+.box{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px;border-bottom:1px solid #000}
+.box div{font-size:11px;font-weight:600}.box input{width:100%;padding:6px;min-height:32px;border:1px solid #000;border-radius:4px}
+.tipos{grid-column:1 / -1;display:flex;gap:12px;align-items:center;padding:6px;background:#f9f9f9;border:1px dashed #000;border-radius:6px}
+.rodape{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:8px;padding:10px;background:#fff;border-top:3px solid #000}
+.q{border:1.5px solid #000;padding:8px;border-radius:8px;font-size:11px}
+.q b{font-size:10px;display:block;margin-bottom:6px;background:#000;color:#fff;padding:3px;border-radius:3px;text-align:center}
+.q input{border:none;border-bottom:1px dotted #999;width:100%;padding:4px 0;font-size:12px;outline:none}
+#sigCanvas{width:100%;height:130px;border:2px solid #000;background:#fff;touch-action:none;border-radius:4px;display:block}
+#botoes{display:flex;gap:8px;padding:10px;background:#f5f5f5;border-top:1px solid #ddd}
+#botoes .btn{flex:1}
+@media (min-width: 768px){
+body{background:#e9e9e9;padding:30px;align-items:flex-start}
+.screen{max-width:900px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.2);min-height:auto;margin:0 auto;padding:40px;border:1px solid #ddd}
+.screen.wide{max-width:1100px}
+#splash{max-width:500px;min-height:600px;border-radius:28px;padding:60px 40px;margin:40px auto}
+#splash img{width:320px}
+#splash h1{font-size:34px}
+.actions{max-width:420px}
+.btn{padding:20px;font-size:17px}
+#login, #cadastro, #loginAdmin, #adminPanel, #menu, #cadEmpresa, #cadEquip{max-width:520px}
+#os{max-width:1000px}
+}
+@media print{
+body{background:#fff;padding:0}
+.screen{box-shadow:none;border-radius:0;max-width:100%;margin:0;padding:0}
+.no-print, .download, #botoes, .foto-btns, .top, .actions{display:none !important}
+.folha{border:none;border-radius:0}
+#os{display:block !important;max-width:100%}
+}
 </style>
 </head>
 <body>
 
-<!-- SPLASH, LOGIN, CADASTRO, ADMIN IGUAIS -->
 <div id="splash" class="screen active splash">
-<img src="./logo_original.png" style="width:220px">
-<h1><span style="color:#b91c1c">BETHEC</span> Empilhadeiras</h1>
+<img src="./logo_original.png">
+<h1><span>BETHEC</span> Empilhadeiras</h1>
 <div class="actions">
 <button class="btn btn-black" onclick="show('login')">Entrar</button>
 <button class="btn btn-white" onclick="show('cadastro')">Criar conta</button>
@@ -50,11 +97,11 @@
 <button class="btn btn-white mt" onclick="show('cadastro')">Criar conta</button>
 </div>
 
-<div id="cadastro" class="screen dark">
-<h2>Cadastro Novo Usuário</h2>
+<div id="cadastro" class="screen">
+<h2 style="text-align:center;margin-bottom:10px">Cadastro Novo Usuário</h2>
 <p class="sub">Senha: MAIÚSCULA + !@#$%^&*</p>
-<div class="input dark"><label>Nome</label><input id="cNome"></div>
-<div class="input dark"><label>Celular</label><input id="cCel" placeholder="(15) 99141-7227" maxlength="15" oninput="mask(this)"></div>
+<div class="input dark"><label>Nome Completo</label><input id="cNome"></div>
+<div class="input dark"><label>Celular com DDD</label><input id="cCel" placeholder="(15) 99141-7227" maxlength="15" oninput="mask(this)"></div>
 <div class="input dark"><label>E-mail</label><input id="cEmail" type="email"></div>
 <div class="input dark"><label>Senha</label><input id="cSenha" type="password" oninput="checkS(this.value)"><button class="eye" onclick="toggle('cSenha',this)">👁️</button></div>
 <div class="hint" id="hSenha">• Precisa: MAIÚSCULA e !@#$%^&*</div>
@@ -65,54 +112,42 @@
 <div id="loginAdmin" class="screen">
 <div class="top"><b>🔐 Admin</b></div>
 <div class="input"><label>Usuário</label><input id="aUser" value="admin"></div>
-<div class="input"><label>Senha</label><input id="aPass" type="password" value="Sofia919521*"><button class="eye" onclick="toggle('aPass',this)">👁️</button></div>
+<div class="input"><label>Senha Admin</label><input id="aPass" type="password" value="Sofia919521*"><button class="eye" onclick="toggle('aPass',this)">👁️</button></div>
 <button class="btn btn-black" onclick="doAdmin()">ENTRAR COMO ADMIN</button>
-<div class="info">admin / Sofia919521*</div>
+<div class="info">Login: admin / Senha: Sofia919521*</div>
 </div>
 
 <div id="adminPanel" class="screen">
-<div class="top"><b>Backup Usuários</b><span id="totalUsers"></span></div>
-<div class="row"><button class="btn btn-black" onclick="exportJSON()">JSON</button><button class="btn btn-red" onclick="exportCSV()">CSV</button></div>
+<div class="top"><b>Backup - Usuários</b><span id="totalUsers"></span></div>
+<div class="row"><button class="btn btn-black" onclick="exportJSON()">Exportar JSON</button><button class="btn btn-red" onclick="exportCSV()">Exportar CSV</button></div>
 <div id="listaUsers"></div>
 <button class="btn btn-white mt" onclick="show('splash')">Sair</button>
 </div>
 
 <div id="menu" class="screen">
 <div class="top"><img src="./logo_original.png"><b>Menu</b></div>
-<div class="card red" onclick="show('cadEmpresa')">🏢 Empresas</div>
-<div class="card black" onclick="show('cadEquip')">🚜 Equipamentos</div>
-<button class="btn btn-black mt" onclick="show('os')">OS 4072 - Abrir Ordem</button>
+<div class="card red" onclick="show('cadEmpresa')">🏢 Cadastro de Empresas</div>
+<div class="card black" onclick="show('cadEquip')">🚜 Cadastro de Equipamentos</div>
+<button class="btn btn-black mt" onclick="show('os')">OS 4072 - Abrir Ordem de Serviço</button>
 <div class="logged">Logado: <span id="userLog"></span></div>
 </div>
 
-<div id="cadEmpresa" class="screen"><div class="top"><b>Empresas</b></div><div class="input"><label>Razão Social</label><input></div><div class="input"><label>CNPJ</label><input></div><button class="btn btn-red" onclick="pop('Salvo!','Empresa cadastrada')">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
-<div id="cadEquip" class="screen"><div class="top"><b>Equipamentos</b></div><div class="input"><label>Marca/Modelo</label><input></div><button class="btn btn-black" onclick="pop('Salvo!','Equipamento cadastrado')">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
+<div id="cadEmpresa" class="screen"><div class="top"><b>Cadastro Empresas</b></div><div class="input"><label>Razão Social</label><input></div><div class="input"><label>CNPJ</label><input></div><button class="btn btn-red" onclick="pop('Salvo!','Empresa cadastrada')">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
+<div id="cadEquip" class="screen"><div class="top"><b>Cadastro Equipamentos</b></div><div class="input"><label>Marca/Modelo</label><input></div><button class="btn btn-black" onclick="pop('Salvo!','Equipamento cadastrado')">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
 
-<!-- SUA OS PERFEITA INTEGRADA -->
 <div id="os" class="screen wide">
 <div class="folha" id="folha">
-<div class="topo">
-<img src="./logo_original.png" alt="BETHEC">
-<div class="info">BETHEC Peças e assistência técnica para empilhadeiras<br>EMAIL: bethecemp@outlook.com<br>CNPJ: 65.940.241/0001-66<br>Tel: 15 99129-6558 - Sorocaba/SP</div>
-</div>
-
+<div class="topo"><img src="./logo_original.png"><div class="info">BETHEC Peças e assistência técnica para empilhadeiras<br>EMAIL: bethecemp@outlook.com<br>CNPJ: 65.940.241/0001-66<br>Tel: 15 99129-6558 - Sorocaba/SP</div></div>
 <div class="box">
-<div>Empresa:<br><input type="text"></div>
-<div>Data:<br><input type="date"></div>
-<div>Marca:<br><input type="text"></div>
-<div>Horímetro:<br><input type="number"></div>
-<div>Cidade:<br><input type="text"></div>
-<div>Modelo:<br><input type="text"></div>
-<div>Motor:<br><input type="text"></div>
-<div>Chassis:<br><input type="text"></div>
-<div>Frota:<br><input type="text"></div>
-<div>Nº OS:<br><input type="text" id="numOS"></div>
+<div>Empresa:<br><input type="text"></div><div>Data:<br><input type="date"></div>
+<div>Marca:<br><input type="text"></div><div>Horímetro:<br><input type="number"></div>
+<div>Cidade:<br><input type="text"></div><div>Modelo:<br><input type="text"></div>
+<div>Motor:<br><input type="text"></div><div>Chassis:<br><input type="text"></div>
+<div>Frota:<br><input type="text"></div><div>Nº OS:<br><input type="text" id="numOS"></div>
 <div class="tipos"><strong>Tipo:</strong><label><input type="radio" name="tipo"> Corretiva</label><label><input type="radio" name="tipo"> Preventiva</label><label><input type="checkbox"> Orçamento</label></div>
 </div>
-
 <h3>Peças aplicadas</h3>
-<table>
-<tr><th style="width:15%">Qntd</th><th style="width:25%">Código</th><th>Descrição</th></tr>
+<table><tr><th style="width:15%">Qntd</th><th style="width:25%">Código</th><th>Descrição</th></tr>
 <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
 <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
 <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
@@ -124,7 +159,6 @@
 <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
 <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
 </table>
-
 <h3>Descrição da mão de obra</h3>
 <table>
 <tr><td><textarea rows="1"></textarea></td></tr>
@@ -134,34 +168,16 @@
 <tr><td><textarea rows="1"></textarea></td></tr>
 <tr><td><textarea rows="1"></textarea></td></tr>
 </table>
-
 <div class="no-print fotos">
-<div class="foto"><strong>📸 FOTO ANTES</strong>
-<div class="foto-btns">
-<label>📷 Câmera<input type="file" id="fAntesCam" accept="image/*" capture="environment"></label>
-<label class="galeria">📎 Galeria<input type="file" id="fAntesGal" accept="image/*"></label>
-</div><img id="pAntes"></div>
-<div class="foto"><strong>📸 FOTO DEPOIS</strong>
-<div class="foto-btns">
-<label>📷 Câmera<input type="file" id="fDepoisCam" accept="image/*" capture="environment"></label>
-<label class="galeria">📎 Galeria<input type="file" id="fDepoisGal" accept="image/*"></label>
-</div><img id="pDepois"></div>
+<div class="foto"><strong>📸 FOTO ANTES</strong><div class="foto-btns"><label>📷 Câmera<input type="file" id="fAntesCam" accept="image/*" capture="environment"></label><label class="galeria">📎 Galeria<input type="file" id="fAntesGal" accept="image/*"></label></div><img id="pAntes"></div>
+<div class="foto"><strong>📸 FOTO DEPOIS</strong><div class="foto-btns"><label>📷 Câmera<input type="file" id="fDepoisCam" accept="image/*" capture="environment"></label><label class="galeria">📎 Galeria<input type="file" id="fDepoisGal" accept="image/*"></label></div><img id="pDepois"></div>
 </div>
-
 <div class="rodape">
-<div class="q"><b>HORÁRIOS</b><br>Chegada: <input type="time"><br>Saída: <input type="time"><br>Desloc.: <input type="text"><br>Hrs: <input type="number"></div>
-<div class="q"><b>ASSINATURA RESPONSÁVEL</b><br>
-<canvas id="sigCanvas"></canvas><br>
-<button type="button" class="no-print" onclick="limparAssinatura()" style="margin-top:6px">Limpar assinatura</button>
+<div class="q"><b>HORÁRIOS</b>Chegada: <input type="time"><br>Saída: <input type="time"><br>Desloc.: <input type="text"><br>Hrs: <input type="number"></div>
+<div class="q"><b>ASSINATURA RESPONSÁVEL</b><canvas id="sigCanvas"></canvas><button type="button" class="no-print" onclick="limparAssinatura()" style="margin-top:6px">Limpar assinatura</button></div>
+<div class="q"><b>STATUS</b><label><input type="checkbox"> LIBERADO</label><br><label><input type="checkbox"> PARADO</label><br><br>Técnico:<input type="text" value="Bruno Santana"></div>
 </div>
-<div class="q"><b>STATUS</b><br><label><input type="checkbox"> LIBERADO</label><br><label><input type="checkbox"> PARADO</label><br><br>Técnico:<input type="text" value="Bruno Santana"></div>
-</div>
-
-<div class="no-print" id="botoes">
-<button class="btn" onclick="window.print()">🖨️ Imprimir</button>
-<button class="btn black" onclick="gerarPDF()">📄 Gerar PDF (1 página)</button>
-<button class="btn btn-white" onclick="show('menu')">Voltar ao Menu</button>
-</div>
+<div class="no-print" id="botoes"><button class="btn btn-black" onclick="window.print()">🖨️ Imprimir</button><button class="btn btn-red" onclick="gerarPDF()">📄 Gerar PDF (1 página)</button><button class="btn btn-white" onclick="show('menu')">Voltar ao Menu</button></div>
 </div>
 </div>
 
