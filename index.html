@@ -3,133 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>BETHEC Empilhadeiras - OS</title>
+<title>BETHEC Empilhadeiras</title>
 <link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" href="./logo_original.png">
+<link rel="apple-touch-icon" href="./logo_original.png">
+<meta name="theme-color" content="#070707">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="stylesheet" href="./style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-
-<!-- LOGIN -->
 <div id="login" class="screen active">
-<div class="top"><img src="./logo_original.png" onerror="this.src='./bethec_final_preto.png'"><b>BETHEC<br><span style="color:#ff2a2a">EMPILHADEIRAS</span></b></div>
+<div class="top"><img src="./logo_original.png"><b>BETHEC<br><span style="color:#ff2a2a">EMPILHADEIRAS</span></b></div>
 <h2 style="font-size:22px;font-weight:900;margin-bottom:14px">Acessar Sistema</h2>
-<div class="input"><label>E-mail</label><input id="lEmail" type="email" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="seu@email.com"></div>
-<div class="input"><label>Senha</label><input id="lSenha" type="password" autocomplete="new-password" placeholder="••••••••"><button class="eye" onclick="toggleEye('lSenha')">👁️</button></div>
+<div class="input"><label>E-mail</label><input id="lEmail" type="email" autocomplete="off" placeholder="seu@email.com"></div>
+<div class="input"><label>Senha</label><input id="lSenha" type="password" placeholder="••••••••"><button class="eye" onclick="toggleEye('lSenha')">👁️</button></div>
 <div id="loginHint" class="hint"></div>
 <button class="btn btn-red" onclick="fazerLogin()">Entrar</button>
 <button class="btn btn-white mt" onclick="show('cadastro')">Criar Conta</button>
 <button class="btn small" onclick="show('adminLogin')">Admin</button>
-<div class="logged">BETHEC • Sorocaba - SP • bethecemp@outlook.com</div>
 </div>
-
-<!-- CADASTRO -->
 <div id="cadastro" class="screen">
-<div class="top"><img src="./logo_original.png" onerror="this.src='./bethec_final_preto.png'"><b>CADASTRO</b></div>
-<div class="input"><label>Nome Completo</label><input id="cNome" type="text" placeholder="Seu nome"></div>
-<div class="input"><label>E-mail</label><input id="cEmail" type="email" autocomplete="off" placeholder="seu@email.com"></div>
-<div class="input"><label>Senha</label><input id="cSenha" type="password" placeholder="Mín. 6 caracteres"></div>
+<div class="top"><img src="./logo_original.png"><b>CADASTRO</b></div>
+<div class="input"><label>Nome</label><input id="cNome"></div>
+<div class="input"><label>E-mail</label><input id="cEmail" type="email"></div>
+<div class="input"><label>Senha</label><input id="cSenha" type="password"></div>
 <div id="cadHint" class="hint"></div>
 <button class="btn btn-red" onclick="fazerCadastro()">Criar Conta</button>
-<button class="btn btn-white mt" onclick="show('login')">Voltar ao Login</button>
+<button class="btn btn-white mt" onclick="show('login')">Voltar</button>
 </div>
-
-<!-- MENU -->
 <div id="menu" class="screen">
 <div class="menu-header">
-<img src="./logo_original.png" onerror="this.src='./bethec_final_preto.png'" class="logo-big" style="width:100%;max-width:280px">
+<img src="./logo_original.png" class="logo-big">
 <h2>BETHEC <span>EMPILHADEIRAS</span></h2>
-<p>Sistema Completo de Gestão • Sorocaba - SP</p>
+<p>Sistema Completo • Sorocaba - SP</p>
 </div>
 <div style="display:flex;gap:8px;margin-bottom:12px">
-<div class="stat" style="flex:1"><b id="statOS">0</b><span>OS Criadas</span></div>
+<div class="stat" style="flex:1"><b id="statOS">0</b><span>OS</span></div>
 <div class="stat" style="flex:1"><b id="statEmp">0</b><span>Empresas</span></div>
-<div class="stat" style="flex:1"><b id="statEquip">0</b><span>Equip.</span></div>
+<div class="stat" style="flex:1"><b id="statEquip">0</b><span>Equip</span></div>
 </div>
-<div class="card-premium btn-os-premium" onclick="show('os')"><div class="icon">📋</div><div class="info"><b>NOVA ORDEM DE SERVIÇO</b><span>Gerar OS com QR Code automático</span></div><div class="arrow">→</div></div>
-<div class="card-premium" onclick="show('cadEmpresa')"><div class="icon blue">🏢</div><div class="info"><b>Cadastro Empresa</b><span>Clientes e filiais</span></div><div class="arrow">→</div></div>
-<div class="card-premium" onclick="show('cadEquip')"><div class="icon black">🚜</div><div class="info"><b>Equipamentos</b><span>Frota e horímetro</span></div><div class="arrow">→</div></div>
-<div class="card-premium" onclick="show('dashboardUser')"><div class="icon green">📊</div><div class="info"><b>Histórico OS</b><span>Ver e restaurar</span></div><div class="arrow">→</div></div>
-<div class="card-premium" onclick="show('backupScreen')"><div class="icon orange">☁️</div><div class="info"><b>Backup Nuvem</b><span>Salvar / Restaurar</span></div><div class="arrow">→</div></div>
-<div class="card-premium" onclick="show('adminLogin')" id="cardAdmin" style="display:none"><div class="icon purple">👑</div><div class="info"><b>Painel Admin</b><span>Gerenciar usuários</span></div><div class="arrow">→</div></div>
-<button class="btn btn-white mt" onclick="fazerLogout()">Sair do Aplicativo</button>
+<div class="card-premium btn-os-premium" onclick="show('os')"><div class="icon">📋</div><div class="info"><b>NOVA ORDEM DE SERVIÇO</b><span>QR automático</span></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('cadEmpresa')"><div class="icon blue">🏢</div><div class="info"><b>Empresa</b></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('cadEquip')"><div class="icon black">🚜</div><div class="info"><b>Equipamentos</b></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('dashboardUser')"><div class="icon green">📊</div><div class="info"><b>Histórico OS</b></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('backupScreen')"><div class="icon orange">☁️</div><div class="info"><b>Backup</b></div><div class="arrow">→</div></div>
+<div class="card-premium" onclick="show('adminLogin')" id="cardAdmin" style="display:none"><div class="icon purple">👑</div><div class="info"><b>Admin</b></div><div class="arrow">→</div></div>
+<button class="btn btn-white mt" onclick="fazerLogout()">Sair</button>
 <div class="logged" id="userEmailLog"></div>
 </div>
-
-<!-- OS - FOLHA -->
 <div id="os" class="screen wide">
 <div id="pdfArea">
 <div class="folha">
 <div class="cabecalho-novo">
-<img src="./logo_original.png" onerror="this.src='./bethec_final_preto.png'" class="logo">
-<div class="centro"><b>BETHEC EMPILHADEIRAS</b><span>Manutenção e Locação • Sorocaba - SP<br>bethecemp@outlook.com • (15) 98122-0967</span><br><span style="font-size:7px;background:#000;color:#fff;padding:2px 6px;border-radius:10px">bethec-empilhadeiras.com</span></div>
-<div class="os-num"><b>ORDEM DE SERVIÇO</b><span id="osNumSpan">4072</span><div id="qrcode" style="margin-top:6px;display:flex;justify-content:center;background:#fff;padding:4px;border-radius:6px;min-height:80px;min-width:80px"></div><span style="font-size:6px">VALIDAÇÃO QR CODE</span></div>
+<img src="./logo_original.png" class="logo">
+<div class="centro"><b>BETHEC EMPILHADEIRAS</b><span>Manutenção e Locação • Sorocaba<br>bethecemp@outlook.com</span></div>
+<div class="os-num"><b>ORDEM</b><span id="osNumSpan">4072</span><div id="qrcode" style="margin-top:6px;display:flex;justify-content:center;background:#fff;padding:4px;border-radius:6px;min-height:80px"></div></div>
 </div>
-
 <div class="dados">
-<div>Empresa<input type="hidden" id="osEmpresa"><select id="osEmpresaSelect" onchange="preencherEmpresaOS()"><option value="">Selecione a Empresa</option></select><input type="text" id="osEmpresaDisplay" placeholder="Ou digite" oninput="document.getElementById('osEmpresa').value=this.value; gerarQRCodeAuto()"></div>
-<div>Cidade<input id="osCidadeAuto" placeholder="Auto"></div>
-<div>Equipamento<select id="osMarcaSelect" onchange="preencherEquipOS()"><option value="">Selecione Equip.</option></select><input type="hidden" id="osMarca"><input type="text" id="osMarcaDisplay" placeholder="Marca" oninput="document.getElementById('osMarca').value=this.value"></div>
-<div>Modelo<input id="osModeloAuto" placeholder="Auto"></div>
-<div>Frota<input id="osFrotaAuto" placeholder="Auto"></div>
-<div>Horímetro<input id="osHoras" type="number" placeholder="Horas" oninput="verificarAlertaHoras()"></div>
+<div>Empresa<input type="hidden" id="osEmpresa"><select id="osEmpresaSelect" onchange="preencherEmpresaOS()"><option>Selecione</option></select><input type="text" id="osEmpresaDisplay" placeholder="Ou digite" oninput="document.getElementById('osEmpresa').value=this.value;gerarQRCodeAuto()"></div>
+<div>Cidade<input id="osCidadeAuto"></div>
+<div>Equip<select id="osMarcaSelect" onchange="preencherEquipOS()"><option>Selecione</option></select><input type="hidden" id="osMarca"><input type="text" id="osMarcaDisplay" placeholder="Marca" oninput="document.getElementById('osMarca').value=this.value"></div>
+<div>Modelo<input id="osModeloAuto"></div>
+<div>Frota<input id="osFrotaAuto"></div>
+<div>Horímetro<input id="osHoras" type="number" oninput="verificarAlertaHoras()"></div>
 <div>Número OS<input id="numOS" value="4072" oninput="gerarQRCodeAuto()"></div>
 <div>Data<input id="osData" type="date"></div>
-<div class="tipos"><b>Tipo:</b> <label><input type="checkbox"> Preventiva</label><label><input type="checkbox"> Corretiva</label><label><input type="checkbox"> Entrega Técnica</label><label><input type="checkbox" id="checkOrcamento" onchange="toggleOrcamento()"> Orçamento</label></div>
-<div class="orcamento-box" id="orcamentoBox"><b>ORÇAMENTO - Itens</b><table><thead><tr><th>Qtd</th><th>Descrição</th><th>Valor Unit</th><th>Total</th></tr></thead><tbody id="orcBody"><tr><td><input type="number" value="1"></td><td><textarea placeholder="Peça/Serviço"></textarea></td><td><input type="number" placeholder="0,00"></td><td><input type="number" placeholder="0,00" readonly></td></tr></tbody></table><button onclick="addLinhaOrc()" style="font-size:10px;padding:4px 8px">+ Item</button></div>
+<div class="tipos"><b>Tipo:</b><label><input type="checkbox"> Preventiva</label><label><input type="checkbox"> Corretiva</label><label><input type="checkbox" id="checkOrcamento" onchange="toggleOrcamento()"> Orçamento</label></div>
+<div class="orcamento-box" id="orcamentoBox"><b>ORÇAMENTO</b><table><thead><tr><th>Qtd</th><th>Descrição</th><th>Valor</th><th>Total</th></tr></thead><tbody id="orcBody"><tr><td><input type="number" value="1"></td><td><textarea></textarea></td><td><input type="number"></td><td><input type="number" readonly></td></tr></tbody></table><button onclick="addLinhaOrc()" style="font-size:10px">+ Item</button></div>
 </div>
-
-<h3>Serviços Executados / Diagnóstico</h3>
-<table><thead><tr><th style="width:5%">#</th><th>Descrição do Serviço</th></tr></thead><tbody id="servBody"></tbody></table>
-
-<h3>Peças Utilizadas</h3>
-<table><thead><tr><th style="width:5%">#</th><th style="width:8%">Qtd</th><th>Peça / Código</th></tr></thead><tbody id="pecaBody"></tbody></table>
-
+<h3>Serviços</h3><table><thead><tr><th>#</th><th>Descrição</th></tr></thead><tbody id="servBody"></tbody></table>
+<h3>Peças</h3><table><thead><tr><th>#</th><th>Qtd</th><th>Peça</th></tr></thead><tbody id="pecaBody"></tbody></table>
 <div class="horarios-novo">
-<div><b>SAÍDA DA OFICINA</b><input type="time" id="h1" value=""></div>
-<div><b>CHEGADA NO CLIENTE</b><input type="time" id="h2" value=""></div>
-<div><b>SAÍDA DO CLIENTE</b><input type="time" id="h3" value=""></div>
-<div><b>CHEGADA NA OFICINA</b><input type="time" id="h4" value=""></div>
+<div><b>SAÍDA OFICINA</b><input type="time" id="h1" value=""></div>
+<div><b>CHEGADA CLIENTE</b><input type="time" id="h2" value=""></div>
+<div><b>SAÍDA CLIENTE</b><input type="time" id="h3" value=""></div>
+<div><b>CHEGADA OFICINA</b><input type="time" id="h4" value=""></div>
 </div>
-
-<h3>Fotos do Serviço (5) - Clique na Câmera</h3>
+<h3>Fotos (5)</h3>
 <div class="fotos-grid">
-<div class="foto-card"><b>FOTO 1 - Antes</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,1)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,1)"></label></div><img id="p1"></div>
-<div class="foto-card"><b>FOTO 2 - Durante</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,2)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,2)"></label></div><img id="p2"></div>
-<div class="foto-card"><b>FOTO 3 - Depois</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,3)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,3)"></label></div><img id="p3"></div>
-<div class="foto-card"><b>FOTO 4 - Detalhe</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,4)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,4)"></label></div><img id="p4"></div>
-<div class="foto-card"><b>FOTO 5 - Extra</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,5)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,5)"></label></div><img id="p5"></div>
+<div class="foto-card"><b>FOTO 1</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,1)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,1)"></label></div><img id="p1"></div>
+<div class="foto-card"><b>FOTO 2</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,2)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,2)"></label></div><img id="p2"></div>
+<div class="foto-card"><b>FOTO 3</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,3)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,3)"></label></div><img id="p3"></div>
+<div class="foto-card"><b>FOTO 4</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,4)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,4)"></label></div><img id="p4"></div>
+<div class="foto-card"><b>FOTO 5</b><div class="foto-btns"><label>📷<input type="file" accept="image/*" capture="environment" onchange="previewFoto(this,5)"></label><label class="galeria">🖼️<input type="file" accept="image/*" onchange="previewFoto(this,5)"></label></div><img id="p5"></div>
 </div>
-
 <div class="rodape">
-<div class="q"><b class="titulo">Observações Técnicas</b><textarea id="obs" placeholder="Condições do equipamento, recomendações..." style="width:100%;height:60px;border:none;outline:none"></textarea></div>
-<div class="q"><b class="titulo">Assinatura Cliente - Validação</b><canvas id="sigCanvas"></canvas><div style="display:flex;gap:4px;margin-top:4px"><button onclick="limparAss()" style="flex:1;font-size:10px;padding:4px">Limpar</button><button onclick="salvarAss()" style="flex:1;font-size:10px;padding:4px;background:#000;color:#fff;border-radius:4px">Salvar Ass.</button></div><div id="qrcode2" style="margin-top:6px;display:flex;justify-content:center"></div></div>
-<div class="q"><b class="titulo">Técnico Responsável</b>Nome:<input id="tecNome" placeholder="Nome técnico" style="width:100%;margin-top:4px;padding:4px;border:1px solid #000;border-radius:4px"><br><br><div style="border-top:1px solid #000;margin-top:10px;padding-top:6px;text-align:center">Assinatura Técnico<br><br>___</div><div id="qrcodePDF" style="margin-top:8px;display:flex;justify-content:center"></div></div>
+<div class="q"><b class="titulo">Observações</b><textarea id="obs" style="width:100%;height:60px;border:none;outline:none"></textarea></div>
+<div class="q"><b class="titulo">Assinatura Cliente</b><canvas id="sigCanvas"></canvas><div style="display:flex;gap:4px;margin-top:4px"><button onclick="limparAss()" style="flex:1;font-size:10px;padding:4px">Limpar</button><button onclick="salvarAss()" style="flex:1;font-size:10px;padding:4px;background:#000;color:#fff;border-radius:4px">Salvar</button></div><div id="qrcode2" style="margin-top:6px;display:flex;justify-content:center"></div></div>
+<div class="q"><b class="titulo">Técnico</b>Nome:<input id="tecNome" style="width:100%;margin-top:4px;padding:4px;border:1px solid #000;border-radius:4px"><div id="qrcodePDF" style="margin-top:8px;display:flex;justify-content:center"></div></div>
 </div>
 </div>
-
-<div class="pagina-fotos" id="fotosPDF">
-<h2>FOTOS DO SERVIÇO - OS <span id="osNumFoto">4072</span> - BETHEC Empilhadeiras</h2>
-<div class="grid-fotos-pdf" id="gridPDF"></div>
-<div class="qr-box" style="margin:10px"><div id="qrcodePDFFinal"></div><br><b style="font-size:10px">Documento Validado por QR Code - BETHEC</b></div>
+<div class="pagina-fotos" id="fotosPDF"><h2>FOTOS OS <span id="osNumFoto">4072</span></h2><div class="grid-fotos-pdf" id="gridPDF"></div></div>
 </div>
-</div>
-
-<div id="botoes"><button class="btn btn-black" onclick="show('menu')">← Menu</button><button class="btn btn-red" onclick="gerarPDF2Pag()">📄 GERAR PDF 2 PÁG. COM QR</button><button class="btn btn-green" onclick="salvarOSNoHistorico();pop('Salvo','OS salva no histórico')">💾 Salvar</button></div>
+<div id="botoes"><button class="btn btn-black" onclick="show('menu')">← Menu</button><button class="btn btn-red" onclick="gerarPDF2Pag()">📄 PDF 2 PÁG</button><button class="btn btn-green" onclick="salvarOSNoHistorico();pop('Salvo','OS salva')">💾 Salvar</button></div>
 <button class="download" onclick="gerarPDF2Pag()">⬇️ PDF</button>
 </div>
-
-<!-- OUTRAS TELAS (Empresa, Equip, Dash, Backup, Admin) -->
-<div id="cadEmpresa" class="screen"><div class="top"><img src="./logo_original.png" style="width:60px"><b>Cadastro Empresa</b></div><div class="input"><label>Nome Empresa</label><input id="empNome"></div><div class="input-grid"><div class="input"><label>Cidade</label><input id="empCidade"></div><div class="input"><label>Estado</label><select id="empEstado"><option>SP</option><option>MG</option><option>PR</option><option>Outros</option></select></div></div><div class="input"><label>Contato / Telefone</label><input id="empContato"></div><button class="btn btn-red" onclick="salvarEmpresa()">Salvar Empresa</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button><div id="listaEmpresas" style="margin-top:16px"></div></div>
-
-<div id="cadEquip" class="screen"><div class="top"><img src="./logo_original.png" style="width:60px"><b>Equipamentos</b></div><div class="input"><label>Empresa</label><select id="equipEmpresaSelect"></select></div><div class="input-grid"><div class="input"><label>Marca</label><input id="equipMarca"></div><div class="input"><label>Modelo</label><input id="equipModelo"></div></div><div class="input-grid"><div class="input"><label>Frota / Placa</label><input id="equipFrota"></div><div class="input"><label>Horas Atuais</label><input id="equipHoras" type="number"></div></div><button class="btn btn-red" onclick="salvarEquip()">Salvar Equipamento</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button><div id="listaEquip" style="margin-top:16px"></div></div>
-
-<div id="dashboardUser" class="screen"><div class="top"><b>Histórico OS</b></div><div id="listaOS"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
-<div id="backupScreen" class="screen"><div class="top"><b>Backup Nuvem</b></div><div class="stat"><b id="emailBackupInfo"></b><span>E-mail logado</span></div><button class="btn btn-red" onclick="gerarBackupCompleto(false)">Gerar Backup Agora</button><div id="listaBackups" style="margin-top:12px"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
-<div id="adminLogin" class="screen"><div class="top"><b>Admin</b></div><div class="input"><label>E-mail Admin</label><input id="aEmail"></div><div class="input"><label>Senha Admin</label><input id="aSenha" type="password"></div><button class="btn btn-red" onclick="loginAdmin()">Entrar Admin</button><button class="btn btn-white mt" onclick="show('login')">Voltar</button></div>
-<div id="adminPanel" class="screen wide"><div class="top"><b>Painel Admin</b></div><div class="stats"><div class="stat"><b id="admUsers">0</b><span>Usuários</span></div><div class="stat"><b id="admOS">0</b><span>OS Total</span></div><div class="stat"><b id="admEmp">0</b><span>Empresas</span></div><div class="stat"><b id="admEquip">0</b><span>Equip</span></div></div><div class="tabs"><div class="tab active" onclick="tabAdmin('users')">Usuários</div><div class="tab" onclick="tabAdmin('empresas')">Empresas</div><div class="tab" onclick="tabAdmin('equip')">Equipamentos</div></div><div id="adminConteudo"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar Menu</button></div>
-
+<div id="cadEmpresa" class="screen"><div class="top"><img src="./logo_original.png" style="width:60px"><b>Empresa</b></div><div class="input"><label>Nome</label><input id="empNome"></div><div class="input-grid"><div class="input"><label>Cidade</label><input id="empCidade"></div><div class="input"><label>Estado</label><select id="empEstado"><option>SP</option><option>MG</option><option>PR</option><option>Outros</option></select></div></div><div class="input"><label>Contato</label><input id="empContato"></div><button class="btn btn-red" onclick="salvarEmpresa()">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button><div id="listaEmpresas" style="margin-top:16px"></div></div>
+<div id="cadEquip" class="screen"><div class="top"><img src="./logo_original.png" style="width:60px"><b>Equip</b></div><div class="input"><label>Empresa</label><select id="equipEmpresaSelect"></select></div><div class="input-grid"><div class="input"><label>Marca</label><input id="equipMarca"></div><div class="input"><label>Modelo</label><input id="equipModelo"></div></div><div class="input-grid"><div class="input"><label>Frota</label><input id="equipFrota"></div><div class="input"><label>Horas</label><input id="equipHoras" type="number"></div></div><button class="btn btn-red" onclick="salvarEquip()">Salvar</button><button class="btn btn-white mt" onclick="show('menu')">Voltar</button><div id="listaEquip" style="margin-top:16px"></div></div>
+<div id="dashboardUser" class="screen"><div class="top"><b>Histórico</b></div><div id="listaOS"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
+<div id="backupScreen" class="screen"><div class="top"><b>Backup</b></div><div class="stat"><b id="emailBackupInfo"></b><span>Logado</span></div><button class="btn btn-red" onclick="gerarBackupCompleto(false)">Backup Agora</button><div id="listaBackups" style="margin-top:12px"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
+<div id="adminLogin" class="screen"><div class="top"><b>Admin</b></div><div class="input"><label>E-mail</label><input id="aEmail"></div><div class="input"><label>Senha</label><input id="aSenha" type="password"></div><button class="btn btn-red" onclick="loginAdmin()">Entrar</button><button class="btn btn-white mt" onclick="show('login')">Voltar</button></div>
+<div id="adminPanel" class="screen wide"><div class="top"><b>Admin</b></div><div class="stats"><div class="stat"><b id="admUsers">0</b><span>Users</span></div><div class="stat"><b id="admOS">0</b><span>OS</span></div><div class="stat"><b id="admEmp">0</b><span>Emp</span></div><div class="stat"><b id="admEquip">0</b><span>Equip</span></div></div><div class="tabs"><div class="tab active" onclick="tabAdmin('users')">Usuários</div><div class="tab" onclick="tabAdmin('empresas')">Empresas</div><div class="tab" onclick="tabAdmin('equip')">Equip</div></div><div id="adminConteudo"></div><button class="btn btn-white mt" onclick="show('menu')">Voltar</button></div>
 <div id="pop" class="popup"><div class="box"><b id="popT"></b><p id="popM" style="margin:8px 0;font-size:13px"></p><button class="btn btn-red" onclick="closePop()">OK</button></div></div>
 <script src="./script.js"></script>
 </body>
