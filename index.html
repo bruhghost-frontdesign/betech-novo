@@ -13,6 +13,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+  <script>
+// FORÇA LIMPAR CACHE ANTIGO - COLA ISSO NO TOPO DO BODY
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(registrations){
+    for(let registration of registrations){
+      registration.unregister();
+    }
+  });
+  caches.keys().then(keys=>{
+    keys.forEach(k=>caches.delete(k));
+  });
+  console.log('Cache limpo!');
+}
+</script>
 <div id="login" class="screen active">
 <div class="top"><img src="./logo_original.png?v=6"><b>BETHEC<br><span style="color:#ff2a2a">EMPILHADEIRAS</span></b></div>
 <h2 style="font-size:22px;font-weight:900;margin-bottom:14px">Acessar Sistema</h2>
